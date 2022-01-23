@@ -135,6 +135,7 @@
 ### MainExecutor
 Отвечает за объединение всех компонентов
 
+0. Регистрирует команды cat, echo, ... в [CommandFactory](#commandfactory)
 1. Просит у [CLI](#cli) очередное выражение
 2. Спрашивает у [AssignmentValidator](#assignmentvalidator), является ли выражение присваиванием
     - Если является, то записываем в [Env](#env) значение и переходим к шагу 1
@@ -144,6 +145,38 @@
 5. Бьет список токенов на списки токенов (будущие команды) с помощью [PipeSpliter](#pipespliter)
 6. Превращает списки токенов в команды с помощью [CommandFactory](#commandfactory)
 7. Просит у [CLI](#cli) поток ввода, вывода и ошибок, передает их и список команд на исполнение [PipeExecutor](#pipeexecutor)
+8. Переходит к шагу 1
 
 То же самое в виде диаграммы
 ![Диаграмма](images/diagram.svg)
+
+## Примеры работы
+
+```cat example.txt | wc```
+
+Разбор:
+1. CLI возвращает MainExecutor *cat example.txt | wc*
+2. AssignmentValidator говорит, что это выражение не является присваиванием
+3. Tokenizer из *cat example.txt | wc* получает [*cat*, *example.txt*, *|*, *wc*]
+4. Substitutor ничего не изменяет
+5. PipeSpliter из [*cat*, *example.txt*, *|*, *wc*] получает [[*cat*, *example.txt*], [*wc*]]
+6. CommandFactory из [*cat*, *example.txt*], [*wc*]] получает [*CatCommand*, *WcCommand*]
+7. PipeExecutor исполняет команду *CatCommand*, ее вывод ("Some example text") передаёт команде WcCommand, выполняет ее, и она выводит в OutputStream *1 3 18*
+
+```FILE=example.txt```
+
+Разбор:
+1. CLI возвращает MainExecutor-у *FILE=example.txt*
+2. AssignmentValidator говорит, что это выражение является присваиванием. MainExecutor модифицирует Env: в переменную *FILE* записываем значение *example.txt*
+
+
+```cat $FILE```
+
+Разбор:
+1. CLI возвращает MainExecutor *cat $FILE*
+2. AssignmentValidator говорит, что это выражение не является присваиванием.
+3. Tokenizer из *cat $FILE* получает [*cat*, *$FILE*]
+4. Substitutor из [*cat*, *$FILE*] получает [*cat*, *example.txt*]
+5. PipeSpliter из [*cat*, *example.txt*] получает [[*cat*, *example.txt*]]
+6. CommandFactory из [[*cat*, *example.txt*]] получает [*CatCommand*]
+7. MainExecutor получает от CLI поток ввода, передает его и список команд [*CatCommand*] на исполнение PipeExecutor. PipeExecutor вызывает метод *run* у *CatCommand* и она выводит в OutputStream *Some example text*
