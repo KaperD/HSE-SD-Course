@@ -52,23 +52,25 @@ class VarNameValidatorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("lengthData")
-    fun `test length of`(token: String, expectedLength: Int) {
-        assertEquals(expectedLength, validator.lengthIn(token))
+    @MethodSource("nameFromBeginning")
+    fun `test name from beginning`(token: String, expectedName: String) {
+        assertEquals(expectedName, validator.nameFromBeginningIn(token))
     }
 
     companion object {
         @JvmStatic
-        fun lengthData() = listOf(
-            Arguments.of("a", 1),
-            Arguments.of("_aA3_aA3", 8),
-            Arguments.of("_331", 4),
-            Arguments.of(" A", 0),
-            Arguments.of("A ", 1),
-            Arguments.of("3aa", 0),
-            Arguments.of("a|a", 1),
-            Arguments.of("aa=a", 2),
-            Arguments.of("a''a", 1),
+        fun nameFromBeginning() = listOf(
+            Arguments.of("a", "a"),
+            Arguments.of("_aA3_aA3", "_aA3_aA3"),
+            Arguments.of("_331", "_331"),
+            Arguments.of("  A", ""),
+            Arguments.of("A  ", "A"),
+            Arguments.of("3aa", ""),
+            Arguments.of("a|a", "a"),
+            Arguments.of("aa=a", "aa"),
+            Arguments.of("a''a", "a"),
+            Arguments.of("   ", ""),
+            Arguments.of("", ""),
         )
     }
 }

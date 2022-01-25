@@ -1,5 +1,5 @@
 package ru.hse
 
 interface Tokenizer {
-    fun parse(expression: String): List<String>
+    fun tokenize(expression: String): Result<List<String>>
 }

@@ -1,5 +1,5 @@
 package ru.hse
 
 interface PipeFactory {
-    fun create(commands: List<Command>): Command
+    fun create(commands: List<Executable>): Executable
 }

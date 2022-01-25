@@ -47,6 +47,8 @@ class SubstitutorTest {
         @JvmStatic
         fun substituteWithoutQuotation() = listOf(
             Arguments.of("a", "a"),
+            Arguments.of("${'$'}", "${'$'}"),
+            Arguments.of("${'$'}3", "${'$'}3"),
             Arguments.of("${'$'}a", "3"),
             Arguments.of("${'$'}a${'$'}a", "33"),
             Arguments.of("${'$'}a=3", "3=3"),
@@ -60,6 +62,8 @@ class SubstitutorTest {
         @JvmStatic
         fun substituteWithDoubleQuotation() = listOf(
             Arguments.of("\"a\"", "a"),
+            Arguments.of("\"${'$'}\"", "\"${'$'}\""),
+            Arguments.of("\"${'$'}3\"", "\"${'$'}3\""),
             Arguments.of("\"${'$'}a\"", "3"),
             Arguments.of("\"${'$'}a${'$'}a\"", "33"),
             Arguments.of("\"${'$'}a=3\"", "3=3"),
@@ -75,6 +79,8 @@ class SubstitutorTest {
         @JvmStatic
         fun substituteWithSingleQuotation() = listOf(
             Arguments.of("'a'", "a"),
+            Arguments.of("'${'$'}'", "'${'$'}'"),
+            Arguments.of("'${'$'}3'", "'${'$'}3'"),
             Arguments.of("'${'$'}a'", "${'$'}a"),
             Arguments.of("'${'$'}a${'$'}a'", "${'$'}a${'$'}a"),
             Arguments.of("'${'$'}a=3'", "${'$'}a=3"),
