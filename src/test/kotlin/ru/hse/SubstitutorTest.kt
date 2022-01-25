@@ -20,32 +20,32 @@ class SubstitutorTest {
     )
 
     @ParameterizedTest
-    @MethodSource("substituteWithoutQuotation")
+    @MethodSource("substituteWithoutQuotationData")
     fun `test substitution without quotation`(token: String, expectedString: String) {
         assertEquals(expectedString, substitutor.substitute(token))
     }
 
     @ParameterizedTest
-    @MethodSource("substituteWithDoubleQuotation")
+    @MethodSource("substituteWithDoubleQuotationData")
     fun `test substitution with double quotation`(token: String, expectedString: String) {
         assertEquals(expectedString, substitutor.substitute(token))
     }
 
     @ParameterizedTest
-    @MethodSource("substituteWithSingleQuotation")
+    @MethodSource("substituteWithSingleQuotationData")
     fun `test substitution with single quotation`(token: String, expectedString: String) {
         assertEquals(expectedString, substitutor.substitute(token))
     }
 
     @ParameterizedTest
-    @MethodSource("substituteWithConcatenation")
+    @MethodSource("substituteWithConcatenationData")
     fun `test substitution with concatenation`(token: String, expectedString: String) {
         assertEquals(expectedString, substitutor.substitute(token))
     }
 
     companion object {
         @JvmStatic
-        fun substituteWithoutQuotation() = listOf(
+        fun substituteWithoutQuotationData() = listOf(
             Arguments.of("a", "a"),
             Arguments.of("${'$'}", "${'$'}"),
             Arguments.of("${'$'}3", "${'$'}3"),
@@ -60,7 +60,7 @@ class SubstitutorTest {
         )
 
         @JvmStatic
-        fun substituteWithDoubleQuotation() = listOf(
+        fun substituteWithDoubleQuotationData() = listOf(
             Arguments.of("\"a\"", "a"),
             Arguments.of("\"${'$'}\"", "\"${'$'}\""),
             Arguments.of("\"${'$'}3\"", "\"${'$'}3\""),
@@ -77,7 +77,7 @@ class SubstitutorTest {
         )
 
         @JvmStatic
-        fun substituteWithSingleQuotation() = listOf(
+        fun substituteWithSingleQuotationData() = listOf(
             Arguments.of("'a'", "a"),
             Arguments.of("'${'$'}'", "'${'$'}'"),
             Arguments.of("'${'$'}3'", "'${'$'}3'"),
@@ -94,7 +94,7 @@ class SubstitutorTest {
         )
 
         @JvmStatic
-        fun substituteWithConcatenation() = listOf(
+        fun substituteWithConcatenationData() = listOf(
             Arguments.of("${'$'}a'${'$'}a'\"${'$'}a\"", "3${'$'}a3"),
             Arguments.of("'${'$'}'a", "${'$'}a"),
             Arguments.of("${'$'}a=3", "3=3"),

@@ -52,14 +52,14 @@ class VarNameValidatorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("nameFromBeginning")
+    @MethodSource("nameFromBeginningData")
     fun `test name from beginning`(token: String, expectedName: String) {
         assertEquals(expectedName, validator.nameFromBeginningIn(token))
     }
 
     companion object {
         @JvmStatic
-        fun nameFromBeginning() = listOf(
+        fun nameFromBeginningData() = listOf(
             Arguments.of("a", "a"),
             Arguments.of("_aA3_aA3", "_aA3_aA3"),
             Arguments.of("_331", "_331"),
