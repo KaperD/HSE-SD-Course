@@ -10,9 +10,9 @@ class TokenizerImpl : Tokenizer {
         var startIndex = 0
         val result = mutableListOf<String>()
         while (startIndex < trimmedExpression.length) {
-            val match = validToken.find(trimmedExpression, startIndex) ?: return failure
+            val match = validToken.find(trimmedExpression, startIndex)
 
-            if (match.range.first != startIndex) {
+            if (match == null || match.range.first != startIndex) {
                 return failure
             }
 
