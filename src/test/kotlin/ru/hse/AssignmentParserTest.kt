@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 class AssignmentParserTest {
     private fun createParser(): AssignmentParser = AssignmentParser(VarNameValidatorImpl(), TokenizerImpl())
 
-    private val validator: AssignmentParser = createParser()
+    private val parser: AssignmentParser = createParser()
 
     @ParameterizedTest
     @ValueSource(
@@ -33,13 +33,13 @@ class AssignmentParserTest {
         ]
     )
     fun `test invalid assignment`(expression: String) {
-        assertTrue(validator.parse(expression).isFailure)
+        assertTrue(parser.parse(expression).isFailure)
     }
 
     @ParameterizedTest
     @MethodSource("validAssignmentData")
     fun `test valid assignment`(expression: String, expectedKey: String, expectedValue: String) {
-        val res = validator.parse(expression)
+        val res = parser.parse(expression)
         assertTrue(res.isSuccess)
         assertEquals(Pair(expectedKey, expectedValue), res.getOrThrow())
     }
@@ -59,7 +59,7 @@ class AssignmentParserTest {
             Arguments.of("AAA=3\"=\"", "AAA", "3\"=\""),
             Arguments.of("a=", "a", ""),
             Arguments.of("a=   ", "a", ""),
-            Arguments.of("a=3    ", "a", "3"),
+            Arguments.of("   a=3    ", "a", "3"),
         )
     }
 }

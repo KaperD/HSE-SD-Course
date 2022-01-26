@@ -5,21 +5,28 @@ class AssignmentParser(
     private val tokenizer: Tokenizer
 ) : Parser<Pair<String, String>> {
     override fun parse(line: String): Result<Pair<String, String>> {
-        val positionOfEqualSign = line.indexOf('=')
+        val trimmedLine = line.trim()
 
-        val varName = line.substring(0, positionOfEqualSign)
-        if (!varNameValidator.check(varName)) {
-            return Result.failure(RuntimeException("Invalid variable name"))
+        val positionOfEqualSign = trimmedLine.indexOf('=')
+        val varName = trimmedLine.substring(0, positionOfEqualSign)
+        val expression = trimmedLine.substring(positionOfEqualSign + 1)
+
+        return when {
+            !checkVarName(varName) -> Result.failure(RuntimeException("Invalid variable name"))
+            !checkExpression(expression) -> Result.failure(RuntimeException("Invalid expression"))
+            else -> Result.success(Pair(varName, expression))
         }
+    }
 
-        val expression = line.substring(positionOfEqualSign + 1)
-        val result = tokenizer.tokenize(expression)
-        if (result.isFailure || result.getOrThrow().size > 1 ||
-            (result.getOrThrow().size == 1 && expression[0].isWhitespace())
-        ) {
-            return Result.failure(RuntimeException("Invalid expression"))
+    private fun checkVarName(varName: String): Boolean {
+        return varNameValidator.check(varName)
+    }
+
+    private fun checkExpression(expression: String): Boolean {
+        if (expression.isNotEmpty() && expression.first().isWhitespace()) {
+            return false
         }
-
-        return Result.success(Pair(varName, expression.trim()))
+        val tokens = tokenizer.tokenize(expression)
+        return tokens.isSuccess && tokens.getOrThrow().size <= 1
     }
 }
