@@ -1,0 +1,57 @@
+name: SD Course Check
+on: [push, pull_request]
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up JDK 11
+              uses: actions/setup-java@v2
+              with:
+                  distribution: 'zulu'
+                  java-version: '11'
+            - name: Check out repository code
+              uses: actions/checkout@v2
+            - name: Build with Gradle
+              run: ./gradlew build -x test
+            - uses: actions/upload-artifact@v2
+              with:
+                  name: project
+                  path: ./
+    check-style:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v2
+              with:
+                  name: project
+            - name: Check style
+              run: ./gradlew detekt
+            - name: Upload a linter report
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v2
+              with:
+                  name: linter-report
+                  path: build/reports/detekt
+    test:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v2
+              with:
+                  name: project
+            - name: Test with Gradle
+              run: ./gradlew test
+            - name: Check test coverage with Gradle
+              run: ./gradlew jacocoTestCoverageVerification
+            - name: Create a test coverage report
+              run: ./gradlew jacocoTestReport
+            - name: Upload a test report
+              uses: actions/upload-artifact@v2
+              with:
+                  name: test-report
+                  path: build/reports/tests/test
+            - name: Upload a test coverage report
+              uses: actions/upload-artifact@v2
+              with:
+                  name: jacoco-html-report
+                  path: build/jacocoHtml
