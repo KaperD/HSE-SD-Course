@@ -12,10 +12,10 @@ class SubstitutorTest {
 
     private val substitutor = createSubstitutor(
         mapOf(
-            "a"    to "3",
-            "aa"   to "5",
+            "a" to "3",
+            "aa" to "5",
             "_aA3" to "4",
-            "x"    to ""
+            "x" to ""
         )
     )
 

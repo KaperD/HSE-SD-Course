@@ -14,7 +14,8 @@ class VarNameValidatorTest {
     private val validator: VarNameValidator = createValidator()
 
     @ParameterizedTest
-    @ValueSource(strings =
+    @ValueSource(
+        strings =
         [
             "a",
             "A",
@@ -32,7 +33,8 @@ class VarNameValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings =
+    @ValueSource(
+        strings =
         [
             "3",
             "123",

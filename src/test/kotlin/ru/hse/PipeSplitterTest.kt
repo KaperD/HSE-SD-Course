@@ -10,6 +10,7 @@ class PipeSplitterTest {
     private fun createSplitter(): PipeSplitter {
         TODO("Return object when it's ready")
     }
+
     private val splitter: PipeSplitter = createSplitter()
 
     @ParameterizedTest
@@ -33,7 +34,10 @@ class PipeSplitterTest {
             Arguments.of(listOf<String>(), listOf<List<String>>()),
             Arguments.of(listOf("echo", "3"), listOf(listOf("echo", "3"))),
             Arguments.of(listOf("echo", "3", "|", "wc"), listOf(listOf("echo", "3"), listOf("wc"))),
-            Arguments.of(listOf("echo", "3", "|", "wc", "|", "wc"), listOf(listOf("echo", "3"), listOf("wc"), listOf("wc"))),
+            Arguments.of(
+                listOf("echo", "3", "|", "wc", "|", "wc"),
+                listOf(listOf("echo", "3"), listOf("wc"), listOf("wc"))
+            ),
         )
 
         @JvmStatic

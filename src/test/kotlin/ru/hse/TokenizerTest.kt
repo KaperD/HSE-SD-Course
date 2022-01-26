@@ -10,6 +10,7 @@ class TokenizerTest {
     private fun createTokenizer(): Tokenizer {
         TODO("Return object when it's ready")
     }
+
     private val tokenizer: Tokenizer = createTokenizer()
 
     @ParameterizedTest

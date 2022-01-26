@@ -5,18 +5,18 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AssignmentParserTest {
     private fun createParser(): AssignmentParser {
         TODO("Return object when it's ready")
     }
+
     private val validator: AssignmentParser = createParser()
 
     @ParameterizedTest
-    @ValueSource(strings =
+    @ValueSource(
+        strings =
         [
             "a= 3",
             "a =3",
