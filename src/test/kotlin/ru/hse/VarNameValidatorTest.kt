@@ -9,9 +9,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class VarNameValidatorTest {
-    private fun createValidator(): VarNameValidator {
-        TODO("Return object when it's ready")
-    }
+    private fun createValidator(): VarNameValidator = VarNameValidatorImpl()
+
     private val validator: VarNameValidator = createValidator()
 
     @ParameterizedTest
