@@ -8,9 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class AssignmentParserTest {
-    private fun createParser(): AssignmentParser {
-        TODO("Return object when it's ready")
-    }
+    private fun createParser(): AssignmentParser = AssignmentParser(VarNameValidatorImpl(), TokenizerImpl())
 
     private val validator: AssignmentParser = createParser()
 
@@ -26,15 +24,12 @@ class AssignmentParserTest {
             "a='3",
             "a=\"3",
             "a=3|",
-            "a=3=",
             "a=3 3",
             "a=${'$'}b b",
             "a=\" 3 \"|' 3 '",
             "33=3",
             "a|=3",
-            "a==3",
-            "=3",
-            "a="
+            "=3"
         ]
     )
     fun `test invalid assignment`(expression: String) {
@@ -62,6 +57,9 @@ class AssignmentParserTest {
             Arguments.of("__=' ${'$'}b '\" ${'$'}b \"' 3 '", "__", "' ${'$'}b '\" ${'$'}b \"' 3 '"),
             Arguments.of("a3=3'|'", "a3", "3'|'"),
             Arguments.of("AAA=3\"=\"", "AAA", "3\"=\""),
+            Arguments.of("a=", "a", ""),
+            Arguments.of("a=   ", "a", ""),
+            Arguments.of("a=3    ", "a", "3"),
         )
     }
 }
