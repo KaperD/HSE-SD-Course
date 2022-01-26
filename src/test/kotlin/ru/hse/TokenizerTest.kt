@@ -7,9 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TokenizerTest {
-    private fun createTokenizer(): Tokenizer {
-        TODO("Return object when it's ready")
-    }
+    private fun createTokenizer(): Tokenizer = TokenizerImpl()
 
     private val tokenizer: Tokenizer = createTokenizer()
 
@@ -34,7 +32,7 @@ class TokenizerTest {
     fun `test parse incorrect expressions wrong quotation`(expression: String) {
         val res = tokenizer.tokenize(expression)
         assertTrue(res.isFailure)
-        assertTrue(res.toString().contains("wrong quotation"))
+        assertTrue(res.toString().contains("Invalid expression for tokenization"))
     }
 
     companion object {
@@ -44,7 +42,7 @@ class TokenizerTest {
             Arguments.of("a", listOf("a")),
             Arguments.of("a|a", listOf("a", "|", "a")),
             Arguments.of("'a'|\"a\"", listOf("'a'", "|", "\"a\"")),
-            Arguments.of("3' '3 3\" \"3 '3 '\"3\"", listOf("3' '3", "3\" \"3", "3 '\"3\"")),
+            Arguments.of("3' '3 3\" \"3 '3 '\"3\"", listOf("3' '3", "3\" \"3", "'3 '\"3\"")),
             Arguments.of("|||", listOf("|", "|", "|")),
             Arguments.of("echo 3 | wc | wc", listOf("echo", "3", "|", "wc", "|", "wc")),
             Arguments.of("cat ${'$'}FILE", listOf("cat", "${'$'}FILE")),
