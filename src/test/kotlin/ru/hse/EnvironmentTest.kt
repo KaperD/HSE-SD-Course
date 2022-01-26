@@ -1,5 +1,6 @@
 package ru.hse
 
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class EnvironmentTest {
@@ -7,6 +8,7 @@ class EnvironmentTest {
         TODO("Return object when it's ready")
     }
 
+    @Test
     fun `test environment get from parent`() {
         val environment = createEnvironment(
             listOf(
@@ -22,6 +24,7 @@ class EnvironmentTest {
         assertEquals("", environment.get("__aA11"))
     }
 
+    @Test
     fun `test environment set`() {
         val environment = createEnvironment(
             listOf(
@@ -50,6 +53,7 @@ class EnvironmentTest {
         assertEquals("", environment.get("new2"))
     }
 
+    @Test
     fun `test environment get all`() {
         val environment = createEnvironment(
             listOf(
