@@ -17,7 +17,9 @@ class PipeParserTest {
         listOf(
             Pair("a", "3"),
             Pair("s", " "),
-            Pair("v", "|")
+            Pair("v", "|"),
+            Pair("x", "ex"),
+            Pair("y", "it"),
         )
     )
 
@@ -77,6 +79,7 @@ class PipeParserTest {
             Arguments.of("echo 3 | echo \"${'$'}a' '${'$'}a\"", listOf(listOf("echo", "3"), listOf("echo", "3 3"))),
             Arguments.of("echo 3 | echo\"3\"", listOf(listOf("echo", "3"), listOf("echo3"))),
             Arguments.of("echo 3 ${'$'}v wc", listOf(listOf("echo", "3", "|", "wc"))),
+            Arguments.of("${'$'}x${'$'}y", listOf(listOf("exit"))),
         )
     }
 }
