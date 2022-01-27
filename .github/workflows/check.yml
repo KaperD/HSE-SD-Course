@@ -12,54 +12,39 @@ jobs:
             - name: Check out repository code
               uses: actions/checkout@v2
             - name: Build with Gradle
+              id: build
               run: ./gradlew build -x test -x detekt
-            - name: Upload build
-              uses: actions/upload-artifact@v2
-              with:
-                  name: build
-                  path: build/
-    check-style:
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
-            - name: Check out repository code
-              uses: actions/checkout@v2
-            - name: Download build
-              uses: actions/download-artifact@v2
-              with:
-                  name: build
-                  path: build/
+
             - name: Check style
+              if: ${{ always() }}
+              id: check_style
               run: ./gradlew detekt
             - name: Upload a linter report
-              if: ${{ failure() }}
+              if: ${{ steps.check_style.conclusion == 'failure' }}
               uses: actions/upload-artifact@v2
               with:
                   name: linter-report
                   path: build/reports/detekt
-    test:
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
-            - name: Check out repository code
-              uses: actions/checkout@v2
-            - name: Download build
-              uses: actions/download-artifact@v2
-              with:
-                  name: build
-                  path: build/
+
             - name: Test with Gradle
+              id: test
+              if: ${{ steps.build.conclusion == 'success' }}
               run: ./gradlew test
-            - name: Check test coverage with Gradle
-              run: ./gradlew jacocoTestCoverageVerification
-            - name: Create a test coverage report
-              run: ./gradlew jacocoTestReport
             - name: Upload a test report
+              if: ${{ steps.test.conclusion == 'failure' }}
               uses: actions/upload-artifact@v2
               with:
                   name: test-report
                   path: build/reports/tests/test
+            - name: Check test coverage with Gradle
+              if: ${{ always() }}
+              run: ./gradlew jacocoTestCoverageVerification
+            - name: Create a test coverage report
+              if: ${{ always() }}
+              id: coverage_report
+              run: ./gradlew jacocoTestReport
             - name: Upload a test coverage report
+              if: ${{ steps.coverage_report.conclusion == 'success' }}
               uses: actions/upload-artifact@v2
               with:
                   name: jacoco-html-report
