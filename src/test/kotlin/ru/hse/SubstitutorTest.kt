@@ -3,8 +3,10 @@ package ru.hse
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
+@Ignore
 class SubstitutorTest {
     private fun createSubstitutor(vars: Map<String, String>): Substitutor {
         TODO("Return object when it's ready")

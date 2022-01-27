@@ -7,8 +7,10 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
+@Ignore
 class CLITest {
     private val charset: Charset = StandardCharsets.UTF_8
     private fun createCLI(input: InputStream, output: OutputStream, error: OutputStream): CLI {
