@@ -46,7 +46,7 @@ jobs:
               id: coverage_report
               run: ./gradlew jacocoTestReport
             - name: Upload a test coverage report
-              if: ${{ steps.coverage_report.conclusion == 'success' }}
+              if: ${{ always() }}
               uses: actions/upload-artifact@v2
               with:
                   name: jacoco-html-report
