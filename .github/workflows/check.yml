@@ -51,3 +51,9 @@ jobs:
               with:
                   name: jacoco-html-report
                   path: build/jacocoHtml
+            - name: Upload a test coverage report to Codecov
+              if: ${{ always() }}
+              uses: codecov/codecov-action@v2
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: build/reports/jacoco/test/jacocoTestReport.xml
