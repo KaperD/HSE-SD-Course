@@ -9,6 +9,11 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
+import java.nio.file.attribute.FileAttribute
+import java.nio.file.attribute.PosixFilePermissions
+import kotlin.io.path.createFile
+import kotlin.io.path.deleteExisting
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -48,6 +53,51 @@ class CatCommandTest {
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
         assertEquals("cat: AoAoA: No such file or directory\n", error.toString(charset))
+    }
+
+    @Test
+    fun `test file not exist multiple files`() {
+        val cat = createCatCommand(listOf("AoAoA", "src/test/resources/cat.txt"))
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(" Hello\n", output.toString(charset))
+        assertEquals("cat: AoAoA: No such file or directory\n", error.toString(charset))
+    }
+
+    @Test
+    fun `test unreadable file`() {
+        val unreadable = Path.of("src/test/resources/unreadable.txt")
+            .createFile(PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("-wx-wx-wx")))
+        val cat = createCatCommand(listOf("src/test/resources/cat.txt", "src/test/resources/unreadable.txt"))
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(" Hello\n", output.toString(charset))
+        assertEquals("cat: src/test/resources/unreadable.txt: Permission denied\n", error.toString(charset))
+        unreadable.deleteExisting()
+    }
+
+    @Test
+    fun `test not regular file`() {
+        val cat = createCatCommand(listOf("src"))
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertEquals("cat: src: Is not a regular file\n", error.toString(charset))
     }
 
     @ParameterizedTest
