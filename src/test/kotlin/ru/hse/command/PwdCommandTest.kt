@@ -1,7 +1,7 @@
 package ru.hse.command
 
 import org.junit.jupiter.api.Test
-import ru.hse.Executable
+import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
