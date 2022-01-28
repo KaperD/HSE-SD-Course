@@ -1,8 +1,10 @@
 package ru.hse.substitutor
 
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 import ru.hse.environment.EnvironmentImpl
 import ru.hse.validator.VarNameValidatorImpl
 import kotlin.test.assertEquals
@@ -43,6 +45,22 @@ class SubstitutorTest {
     @MethodSource("substituteWithConcatenationData")
     fun `test substitution with concatenation`(token: String, expectedString: String) {
         assertEquals(expectedString, substitutor.substitute(token))
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings =
+        [
+            "echo'",
+            "echo\"",
+            "echo'${'$'}a",
+            "echo\"${'$'}a",
+        ]
+    )
+    fun `test substitution with invalid token`(token: String) {
+        assertThrows<InternalError> {
+            substitutor.substitute(token)
+        }
     }
 
     companion object {
