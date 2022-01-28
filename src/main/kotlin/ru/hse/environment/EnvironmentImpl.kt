@@ -14,9 +14,7 @@ class EnvironmentImpl(
         return localVariables.getOrElse(key) { parentEnv?.get(key) ?: "" }
     }
 
-    override fun getAll(): Collection<Pair<String, String>> {
-        return localVariables.entries.map { entry ->
-            Pair(entry.key, entry.value)
-        }
+    override fun getAll(): Map<String, String> {
+        return localVariables
     }
 }

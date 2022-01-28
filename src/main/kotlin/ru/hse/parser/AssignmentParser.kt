@@ -1,7 +1,7 @@
 package ru.hse.parser
 
-import ru.hse.validator.VarNameValidator
 import ru.hse.tokenizer.Tokenizer
+import ru.hse.validator.VarNameValidator
 
 class AssignmentParser(
     private val varNameValidator: VarNameValidator,

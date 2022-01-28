@@ -1,19 +1,21 @@
 package ru.hse.environment
 
-
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class EnvironmentTest {
-    private fun createEnvironment(parentEnv: Collection<Pair<String, String>>): Environment = EnvironmentImpl(EnvironmentImpl(null, parentEnv.toMap()))
+    private fun createEnvironment(parentEnv: Map<String, String>): Environment {
+        return EnvironmentImpl(EnvironmentImpl(null, parentEnv.toMap()))
+    }
 
     @Test
     fun `test environment get from parent`() {
         val environment = createEnvironment(
-            listOf(
-                Pair("a", "3"),
-                Pair("b", "4"),
-                Pair("__aA1", "3")
+            mapOf(
+                "a" to "3",
+                "b" to "4",
+                "__aA1" to "3"
             )
         )
         assertEquals("3", environment.get("a"))
@@ -26,10 +28,10 @@ class EnvironmentTest {
     @Test
     fun `test environment set`() {
         val environment = createEnvironment(
-            listOf(
-                Pair("a", "3"),
-                Pair("b", "4"),
-                Pair("__aA1", "3")
+            mapOf(
+                "a" to "3",
+                "b" to "4",
+                "__aA1" to "3"
             )
         )
         environment.set("a", "0")
@@ -55,41 +57,38 @@ class EnvironmentTest {
     @Test
     fun `test environment get all`() {
         val environment = createEnvironment(
-            listOf(
-                Pair("a", "3"),
-                Pair("b", "4"),
-                Pair("__aA1", "3")
+            mapOf(
+                "a" to "3",
+                "b" to "4",
+                "__aA1" to "3"
             )
         )
-        assertEquals(
-            emptySet(),
-            HashSet(environment.getAll())
-        )
+        assertTrue(environment.getAll().isEmpty())
         environment.set("a", "0")
         environment.set("b", "1")
         environment.set("__aA1", "2")
         environment.set("new", "new")
         assertEquals(
-            setOf(
-                Pair("a", "0"),
-                Pair("b", "1"),
-                Pair("__aA1", "2"),
-                Pair("new", "new")
+            mapOf(
+                "a" to "0",
+                "b" to "1",
+                "__aA1" to "2",
+                "new" to "new"
             ),
-            HashSet(environment.getAll())
+            environment.getAll()
         )
         environment.set("a", "00")
         environment.set("b", "10")
         environment.set("__aA1", "20")
         environment.set("new", "new0")
         assertEquals(
-            setOf(
-                Pair("a", "00"),
-                Pair("b", "10"),
-                Pair("__aA1", "20"),
-                Pair("new", "new0")
+            mapOf(
+                "a" to "00",
+                "b" to "10",
+                "__aA1" to "20",
+                "new" to "new0"
             ),
-            HashSet(environment.getAll())
+            environment.getAll()
         )
     }
 }

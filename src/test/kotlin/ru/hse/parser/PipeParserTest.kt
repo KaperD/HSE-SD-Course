@@ -10,16 +10,16 @@ import kotlin.test.assertTrue
 
 @Ignore
 class PipeParserTest {
-    private fun createParser(env: Collection<Pair<String, String>>): PipeParser {
+    private fun createParser(env: Map<String, String>): PipeParser {
         TODO("Return object when it's ready")
     }
     private val parser: PipeParser = createParser(
-        listOf(
-            Pair("a", "3"),
-            Pair("s", " "),
-            Pair("v", "|"),
-            Pair("x", "ex"),
-            Pair("y", "it"),
+        mapOf(
+            "a" to "3",
+            "s" to " ",
+            "v" to "|",
+            "x" to "ex",
+            "y" to "it",
         )
     )
 
