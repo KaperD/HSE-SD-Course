@@ -6,10 +6,9 @@ import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
-@Ignore
 class SubstitutorTest {
     private fun createSubstitutor(vars: Map<String, String>): Substitutor {
-        TODO("Return object when it's ready")
+        return SubstitutorImpl(EnvironmentImpl(vars), VarNameValidatorImpl())
     }
 
     private val substitutor = createSubstitutor(
@@ -64,8 +63,8 @@ class SubstitutorTest {
         @JvmStatic
         fun substituteWithDoubleQuotationData() = listOf(
             Arguments.of("\"a\"", "a"),
-            Arguments.of("\"${'$'}\"", "\"${'$'}\""),
-            Arguments.of("\"${'$'}3\"", "\"${'$'}3\""),
+            Arguments.of("\"${'$'}\"", "${'$'}"),
+            Arguments.of("\"${'$'}3\"", "${'$'}3"),
             Arguments.of("\"${'$'}a\"", "3"),
             Arguments.of("\"${'$'}a${'$'}a\"", "33"),
             Arguments.of("\"${'$'}a=3\"", "3=3"),
@@ -81,8 +80,8 @@ class SubstitutorTest {
         @JvmStatic
         fun substituteWithSingleQuotationData() = listOf(
             Arguments.of("'a'", "a"),
-            Arguments.of("'${'$'}'", "'${'$'}'"),
-            Arguments.of("'${'$'}3'", "'${'$'}3'"),
+            Arguments.of("'${'$'}'", "${'$'}"),
+            Arguments.of("'${'$'}3'", "${'$'}3"),
             Arguments.of("'${'$'}a'", "${'$'}a"),
             Arguments.of("'${'$'}a${'$'}a'", "${'$'}a${'$'}a"),
             Arguments.of("'${'$'}a=3'", "${'$'}a=3"),
