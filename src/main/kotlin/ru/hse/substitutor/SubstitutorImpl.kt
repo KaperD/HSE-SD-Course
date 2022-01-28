@@ -38,7 +38,7 @@ class SubstitutorImpl(
                 }
             }
         }
-        return index
+        throw InternalError("Could not find a pair for a double quote in the token: $token")
     }
 
     private fun singleQuote(resultBuilder: StringBuilder, token: String, startIndex: Int): Int {
@@ -52,7 +52,7 @@ class SubstitutorImpl(
                 }
             }
         }
-        return index
+        throw InternalError("Could not find a pair for a single quote in the token: $token")
     }
 
     private fun processDollar(resultBuilder: StringBuilder, token: String, startIndex: Int): Int {
