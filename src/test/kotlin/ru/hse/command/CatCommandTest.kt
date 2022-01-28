@@ -13,17 +13,15 @@ import java.nio.file.Path
 import java.nio.file.attribute.PosixFilePermissions
 import kotlin.io.path.createFile
 import kotlin.io.path.deleteExisting
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 
-@Ignore
 class CatCommandTest {
     private val charset: Charset = HseshCharsets.default
 
     private fun createCatCommand(args: List<String>): Executable {
-        TODO("Return object when it's ready")
+        return CatCommand(args)
     }
 
     @Test
@@ -117,11 +115,21 @@ class CatCommandTest {
     companion object {
         @JvmStatic
         fun catData() = listOf(
-            Arguments.of(listOf("cat.txt"), " Hello\n"),
-            Arguments.of(listOf("cat2.txt"), "wor ld\n \n!\n\n"),
-            Arguments.of(listOf("cat.txt", "cat2.txt"), " Hello\nwor ld\n \n!\n\n"),
-            Arguments.of(listOf("cat2.txt", "cat.txt"), "wor ld\n \n!\n\n Hello\n"),
-            Arguments.of(listOf("cat.txt", "cat.txt", "cat.txt"), " Hello\n Hello\n Hello\n"),
+            Arguments.of(listOf("src/test/resources/cat.txt"), " Hello\n"),
+            Arguments.of(listOf("src/test/resources/cat2.txt"), "wor ld\n\n!\n\n"),
+            Arguments.of(listOf(
+                "src/test/resources/cat.txt",
+                "src/test/resources/cat2.txt"
+            ), " Hello\nwor ld\n\n!\n\n"),
+            Arguments.of(listOf(
+                "src/test/resources/cat2.txt",
+                "src/test/resources/cat.txt"
+            ), "wor ld\n\n!\n\n Hello\n"),
+            Arguments.of(listOf(
+                "src/test/resources/cat.txt",
+                "src/test/resources/cat.txt",
+                "src/test/resources/cat.txt"
+            ), " Hello\n Hello\n Hello\n"),
         )
     }
 }
