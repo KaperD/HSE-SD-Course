@@ -6,18 +6,14 @@ import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 
-@Ignore
 class PwdCommandTest {
     private val charset: Charset = HseshCharsets.default
 
-    private fun createPwdCommand(args: List<String>): Executable {
-        TODO("Return object when it's ready")
-    }
+    private fun createPwdCommand(args: List<String>): Executable = PwdCommand(args)
 
     @Test
     fun `test correct pwd call`() {
