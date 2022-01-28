@@ -25,11 +25,13 @@ class CatCommandTest {
     @Test
     fun `test empty args`() {
         val cat = createCatCommand(emptyList())
-        assertFalse(cat.isExit())
+
         val input = ByteArrayInputStream("Hello \n World".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, cat.run(input, output, error))
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
         assertEquals("Hello \n World", output.toString(charset))
         assertEquals(0, error.size())
     }
@@ -37,12 +39,13 @@ class CatCommandTest {
     @Test
     fun `test file not exist`() {
         val cat = createCatCommand(listOf("AoAoA"))
-        assertFalse(cat.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertNotEquals(0, cat.run(input, output, error))
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
         assertEquals("cat: AoAoA: No such file or directory\n", error.toString(charset))
     }
@@ -51,12 +54,13 @@ class CatCommandTest {
     @MethodSource("catData")
     fun `test cat existing files`(args: List<String>, expectedOutput: String) {
         val cat: Executable = createCatCommand(args)
-        assertFalse(cat.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, cat.run(input, output, error))
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
         assertEquals(expectedOutput, output.toString(StandardCharsets.UTF_8))
         assertEquals(0, error.size())
     }

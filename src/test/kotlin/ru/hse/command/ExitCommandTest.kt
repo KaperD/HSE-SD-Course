@@ -21,12 +21,13 @@ class ExitCommandTest {
     @MethodSource("exitData")
     fun `test exit`(args: List<String>) {
         val exit: Executable = createExitCommand(args)
-        assertTrue(exit.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, exit.run(input, output, error))
+        val res = exit.run(input, output, error)
+        assertTrue(res.needExit)
+        assertEquals(0, res.exitCode)
         assertEquals("Bye\n", output.toString(StandardCharsets.UTF_8))
         assertEquals(0, error.size())
     }

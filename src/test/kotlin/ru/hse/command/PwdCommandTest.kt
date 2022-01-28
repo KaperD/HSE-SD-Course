@@ -19,12 +19,13 @@ class PwdCommandTest {
     @Test
     fun `test correct pwd call`() {
         val pwd = createPwdCommand(emptyList())
-        assertFalse(pwd.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, pwd.run(input, output, error))
+        val res = pwd.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
         assertEquals(System.getProperty("user.dir") + "\n", output.toString(StandardCharsets.UTF_8))
         assertEquals(0, error.size())
     }
@@ -32,12 +33,13 @@ class PwdCommandTest {
     @Test
     fun `test incorrect pwd call`() {
         val pwd = createPwdCommand(listOf("some"))
-        assertFalse(pwd.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertNotEquals(0, pwd.run(input, output, error))
+        val res = pwd.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
         assertEquals("pwd: too many arguments\n", error.toString(StandardCharsets.UTF_8))
     }

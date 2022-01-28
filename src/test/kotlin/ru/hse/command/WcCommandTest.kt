@@ -25,24 +25,26 @@ class WcCommandTest {
     @Test
     fun `test empty args`() {
         val wc = createWcCommand(emptyList())
-        assertFalse(wc.isExit())
         val input = ByteArrayInputStream("123 ы\n".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, wc.run(input, output, error))
-        assertEquals("1 2 7", output.toString(charset))
+        val res = wc.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
+        assertEquals("1 2 7\n", output.toString(charset))
         assertEquals(0, error.size())
     }
 
     @Test
     fun `test file not exist`() {
         val wc = createWcCommand(listOf("AoAoA"))
-        assertFalse(wc.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertNotEquals(0, wc.run(input, output, error))
+        val res = wc.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
         assertEquals("wc: AoAoA: No such file or directory\n", error.toString(charset))
     }
@@ -51,12 +53,13 @@ class WcCommandTest {
     @MethodSource("wcData")
     fun `test wc existing files`(args: List<String>, expectedOutput: String) {
         val wc: Executable = createWcCommand(args)
-        assertFalse(wc.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, wc.run(input, output, error))
+        val res = wc.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
         assertEquals(expectedOutput, output.toString(StandardCharsets.UTF_8))
         assertEquals(0, error.size())
     }
