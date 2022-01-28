@@ -54,11 +54,15 @@ class SubstitutorImpl(
 
     private fun processDollar(resultBuilder: StringBuilder, token: String, startIndex: Int): Int {
         val index = startIndex + 1
+
         val varName = if (index < token.length) varNameValidator.nameFromBeginningIn(token.substring(index)) else ""
+
         if (varName.isEmpty()) {
             resultBuilder.append(DOLLAR)
+        } else {
+            resultBuilder.append(environment.get(varName))
         }
-        resultBuilder.append(environment.get(varName))
+
         return index + varName.length
     }
 
