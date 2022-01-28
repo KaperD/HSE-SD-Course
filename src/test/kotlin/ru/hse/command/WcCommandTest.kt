@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -16,7 +16,7 @@ import kotlin.test.assertNotEquals
 
 @Ignore
 class WcCommandTest {
-    private val charset: Charset = StandardCharsets.UTF_8
+    private val charset: Charset = HseshCharsets.default
 
     private fun createWcCommand(args: List<String>): Executable {
         TODO("Return object when it's ready")
@@ -60,7 +60,7 @@ class WcCommandTest {
         val res = wc.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(expectedOutput, output.toString(StandardCharsets.UTF_8))
+        assertEquals(expectedOutput, output.toString(charset))
         assertEquals(0, error.size())
     }
 

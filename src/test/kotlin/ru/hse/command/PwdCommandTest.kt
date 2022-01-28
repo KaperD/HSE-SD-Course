@@ -1,10 +1,11 @@
 package ru.hse.command
 
 import org.junit.jupiter.api.Test
+import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.nio.charset.StandardCharsets
+import java.nio.charset.Charset
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -12,6 +13,8 @@ import kotlin.test.assertNotEquals
 
 @Ignore
 class PwdCommandTest {
+    private val charset: Charset = HseshCharsets.default
+
     private fun createPwdCommand(args: List<String>): Executable {
         TODO("Return object when it's ready")
     }
@@ -26,7 +29,7 @@ class PwdCommandTest {
         val res = pwd.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(System.getProperty("user.dir") + "\n", output.toString(StandardCharsets.UTF_8))
+        assertEquals(System.getProperty("user.dir") + "\n", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -41,6 +44,6 @@ class PwdCommandTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("pwd: too many arguments\n", error.toString(StandardCharsets.UTF_8))
+        assertEquals("pwd: too many arguments\n", error.toString(charset))
     }
 }

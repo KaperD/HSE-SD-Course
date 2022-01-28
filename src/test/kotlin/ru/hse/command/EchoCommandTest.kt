@@ -3,10 +3,10 @@ package ru.hse.command
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.nio.charset.StandardCharsets
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -28,7 +28,7 @@ class EchoCommandTest {
         val res = echo.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(expectedOutput, output.toString(StandardCharsets.UTF_8))
+        assertEquals(expectedOutput, output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 

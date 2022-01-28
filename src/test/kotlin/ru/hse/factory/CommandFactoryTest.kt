@@ -1,16 +1,16 @@
 package ru.hse.factory
 
 import org.junit.jupiter.api.Test
+import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 import kotlin.test.*
 
 @Ignore
 class CommandFactoryTest {
-    private val charset: Charset = StandardCharsets.UTF_8
+    private val charset: Charset = HseshCharsets.default
 
     private fun createCommandFactory(): CommandFactory {
         TODO("Return object when it's ready")

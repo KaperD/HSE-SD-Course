@@ -1,6 +1,7 @@
 package ru.hse.cli
 
 import org.junit.jupiter.api.Test
+import ru.hse.charset.HseshCharsets
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -12,7 +13,8 @@ import kotlin.test.assertEquals
 
 @Ignore
 class CLITest {
-    private val charset: Charset = StandardCharsets.UTF_8
+    private val charset: Charset = HseshCharsets.default
+
     private fun createCLI(input: InputStream, output: OutputStream, error: OutputStream): CLI {
         TODO("Return object when it's ready")
     }

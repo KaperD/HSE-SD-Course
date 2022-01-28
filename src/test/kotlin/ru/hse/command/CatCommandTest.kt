@@ -4,13 +4,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
-import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.PosixFilePermissions
 import kotlin.io.path.createFile
 import kotlin.io.path.deleteExisting
@@ -21,7 +20,7 @@ import kotlin.test.assertNotEquals
 
 @Ignore
 class CatCommandTest {
-    private val charset: Charset = StandardCharsets.UTF_8
+    private val charset: Charset = HseshCharsets.default
 
     private fun createCatCommand(args: List<String>): Executable {
         TODO("Return object when it's ready")
@@ -111,7 +110,7 @@ class CatCommandTest {
         val res = cat.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(expectedOutput, output.toString(StandardCharsets.UTF_8))
+        assertEquals(expectedOutput, output.toString(charset))
         assertEquals(0, error.size())
     }
 

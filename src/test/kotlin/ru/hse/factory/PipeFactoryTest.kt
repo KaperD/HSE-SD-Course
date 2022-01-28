@@ -1,15 +1,15 @@
 package ru.hse.factory
 
 import org.junit.jupiter.api.Test
+import ru.hse.charset.HseshCharsets
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 import kotlin.test.*
 
 @Ignore
 class PipeFactoryTest {
-    private val charset: Charset = StandardCharsets.UTF_8
+    private val charset: Charset = HseshCharsets.default
 
     private fun createPipeFactory(): PipeFactory {
         TODO("Return object when it's ready")
