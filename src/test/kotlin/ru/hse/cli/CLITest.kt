@@ -7,16 +7,13 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
-@Ignore
 class CLITest {
     private val charset: Charset = HseshCharsets.default
 
     private fun createCLI(input: InputStream, output: OutputStream, error: OutputStream): CLI {
-        TODO("Return object when it's ready")
+        return CLIImpl(input, output, error)
     }
 
     @Test
