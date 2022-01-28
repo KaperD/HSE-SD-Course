@@ -21,12 +21,13 @@ class EchoCommandTest {
     @MethodSource("echoData")
     fun `test valid assignment`(args: List<String>, expectedOutput: String) {
         val echo: Executable = createEchoCommand(args)
-        assertFalse(echo.isExit())
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, echo.run(input, output, error))
+        val res = echo.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
         assertEquals(expectedOutput, output.toString(StandardCharsets.UTF_8))
         assertEquals(0, error.size())
     }

@@ -21,12 +21,10 @@ class CommandFactoryTest {
     fun `test creating registered command`() {
 //        factory.registerCommand("wc", { WcCommand(it) })
         val cat = factory.create(listOf("wc", "file"))
-        assertFalse(cat.isExit())
         assertIs<Executable>(cat) // Заменить на WcCommand
 
         //        factory.registerCommand("exit", { ExitCommand(it) })
         val exit = factory.create(listOf("exit"))
-        assertTrue(exit.isExit())
         assertIs<Executable>(exit) // Заменить на ExitCommand
     }
 
@@ -37,7 +35,9 @@ class CommandFactoryTest {
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertEquals(0, echo.run(input, output, error))
+        val res = echo.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
         assertEquals("3 3\n", output.toString())
         assertEquals(0, error.size())
     }
@@ -48,7 +48,9 @@ class CommandFactoryTest {
         val input = ByteArrayInputStream("123\n".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertNotEquals(0, wc.run(input, output, error))
+        val res = wc.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
         assertEquals("123\n", output.toString())
         assertEquals(0, error.size())
     }
@@ -60,8 +62,23 @@ class CommandFactoryTest {
         input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        assertNotEquals(0, pwd.run(input, output, error))
+        val res = pwd.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
         assertEquals("pwd: too many arguments\n", error.toString(charset))
+    }
+
+    @Test
+    fun `test creating not existing command`() {
+        val command = factory.create(listOf("AoAoA", "3"))
+        val input = ByteArrayInputStream(ByteArray(0))
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = command.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertEquals("Put here a message", error.toString(charset))
     }
 }
