@@ -3,8 +3,8 @@ package ru.hse.substitutor
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import ru.hse.validator.VarNameValidatorImpl
 import ru.hse.environment.EnvironmentImpl
+import ru.hse.validator.VarNameValidatorImpl
 import kotlin.test.assertEquals
 
 class SubstitutorTest {
