@@ -7,14 +7,12 @@ import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
-@Ignore
 class EchoCommandTest {
     private fun createEchoCommand(args: List<String>): Executable {
-        TODO("Return object when it's ready")
+        return EchoCommand(args)
     }
 
     @ParameterizedTest
