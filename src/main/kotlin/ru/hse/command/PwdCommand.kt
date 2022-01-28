@@ -11,10 +11,10 @@ class PwdCommand(private val args: List<String>) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         if (args.isNotEmpty()) {
             error.write("pwd: too many arguments\n".toByteArray(HseshCharsets.default))
-            return ExecutionResult(1, false)
+            return ExecutionResult.fail(false)
         }
         output.write(Paths.get("").toAbsolutePath().toString().toByteArray(HseshCharsets.default))
         output.write("\n".toByteArray(HseshCharsets.default))
-        return ExecutionResult(0, false)
+        return ExecutionResult.success(false)
     }
 }

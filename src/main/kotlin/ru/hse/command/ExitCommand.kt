@@ -9,6 +9,6 @@ import java.io.OutputStream
 class ExitCommand : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         output.write("Bye\n".toByteArray(HseshCharsets.default))
-        return ExecutionResult(0, true)
+        return ExecutionResult.success(true)
     }
 }
