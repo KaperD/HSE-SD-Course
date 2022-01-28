@@ -11,7 +11,12 @@ class EnvironmentImpl(
     }
 
     override fun get(key: String): String {
-        return localVariables.getOrElse(key) { parentEnv?.get(key) ?: "" }
+        return localVariables.getOrElse(key) {
+            return when (parentEnv) {
+                null -> ""
+                else -> parentEnv.get(key)
+            }
+        }
     }
 
     override fun getAll(): Map<String, String> {

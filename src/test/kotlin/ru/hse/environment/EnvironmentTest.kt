@@ -6,7 +6,7 @@ import kotlin.test.assertTrue
 
 class EnvironmentTest {
     private fun createEnvironment(parentEnv: Map<String, String>): Environment {
-        return EnvironmentImpl(EnvironmentImpl(null, parentEnv.toMap()))
+        return EnvironmentImpl(EnvironmentImpl(null, parentEnv))
     }
 
     @Test
