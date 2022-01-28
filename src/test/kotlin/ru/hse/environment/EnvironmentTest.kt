@@ -1,6 +1,7 @@
-package ru.hse
+package ru.hse.environment
 
 import org.junit.jupiter.api.Test
+import ru.hse.Environment
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
