@@ -2,10 +2,6 @@ package ru.hse
 
 class PipeSplitterImpl : PipeSplitter {
     override fun split(tokens: List<String>): Result<List<List<String>>> {
-        if (!validatePipe(tokens)) {
-            return Result.failure(RuntimeException("There is empty command in pipe"))
-        }
-
         val splitPipe = mutableListOf<List<String>>()
         var tokenAccumulator: MutableList<String> = mutableListOf()
 
@@ -18,17 +14,16 @@ class PipeSplitterImpl : PipeSplitter {
             }
         }
 
-        if (tokenAccumulator.isNotEmpty()) {
+        if (tokens.isNotEmpty()) {
             splitPipe.add(tokenAccumulator)
+        }
+
+        if (splitPipe.any { it.isEmpty() }) {
+            return Result.failure(RuntimeException("There is empty command in pipe"))
         }
 
         return Result.success(splitPipe)
     }
-
-    private fun validatePipe(tokens: List<String>): Boolean =
-        tokens.isEmpty() ||
-            tokens.zipWithNext().none { it == PIPE_SPLIT_TOKEN to PIPE_SPLIT_TOKEN } &&
-            tokens.last() != PIPE_SPLIT_TOKEN && tokens.first() != PIPE_SPLIT_TOKEN
 
     companion object {
         const val PIPE_SPLIT_TOKEN = "|"
