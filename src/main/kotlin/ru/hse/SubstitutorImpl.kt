@@ -1,5 +1,7 @@
 package ru.hse
 
+import ru.hse.environment.Environment
+
 class SubstitutorImpl(
     private val environment: Environment,
     private val varNameValidator: VarNameValidator

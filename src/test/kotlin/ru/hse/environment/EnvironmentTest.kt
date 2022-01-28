@@ -1,12 +1,11 @@
 package ru.hse.environment
 
+
 import org.junit.jupiter.api.Test
-import ru.hse.Environment
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
 class EnvironmentTest {
-    private fun createEnvironment(parentEnv: Collection<Pair<String, String>>): Environment = EnvironmentImpl(parentEnv.toMap())
+    private fun createEnvironment(parentEnv: Collection<Pair<String, String>>): Environment = EnvironmentImpl(EnvironmentImpl(null, parentEnv.toMap()))
 
     @Test
     fun `test environment get from parent`() {

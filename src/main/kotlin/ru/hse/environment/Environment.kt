@@ -1,4 +1,4 @@
-package ru.hse
+package ru.hse.environment
 
 interface Environment {
     fun set(key: String, value: String)

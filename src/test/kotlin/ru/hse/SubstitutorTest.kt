@@ -3,12 +3,14 @@ package ru.hse
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.hse.environment.Environment
+import ru.hse.environment.EnvironmentImpl
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
 class SubstitutorTest {
     private fun createSubstitutor(vars: Map<String, String>): Substitutor {
-        return SubstitutorImpl(EnvironmentImpl(vars), VarNameValidatorImpl())
+        return SubstitutorImpl(EnvironmentImpl(EnvironmentImpl(null, vars)), VarNameValidatorImpl())
     }
 
     private val substitutor = createSubstitutor(
