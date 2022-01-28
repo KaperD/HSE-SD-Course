@@ -6,16 +6,17 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
+import java.io.*
 import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.attribute.PosixFilePermissions
 import kotlin.io.path.createFile
 import kotlin.io.path.deleteExisting
+import kotlin.io.path.pathString
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 class CatCommandTest {
     private val charset: Charset = HseshCharsets.default
@@ -67,10 +68,38 @@ class CatCommandTest {
     }
 
     @Test
+    fun `test closed output`() {
+        val cat = createCatCommand(listOf("src/test/resources/cat.txt"))
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = OutputStream.nullOutputStream()
+        output.close()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertTrue(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, error.size())
+    }
+
+    @Test
+    fun `test closed output with input`() {
+        val cat = createCatCommand(emptyList())
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = OutputStream.nullOutputStream()
+        output.close()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertTrue(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, error.size())
+    }
+
+    @Test
     fun `test unreadable file`() {
         val unreadable = Path.of("src/test/resources/unreadable.txt")
             .createFile(PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("-wx-wx-wx")))
-        val cat = createCatCommand(listOf("src/test/resources/cat.txt", "src/test/resources/unreadable.txt"))
+        val cat = createCatCommand(listOf("src/test/resources/cat.txt", unreadable.pathString))
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
@@ -117,19 +146,28 @@ class CatCommandTest {
         fun catData() = listOf(
             Arguments.of(listOf("src/test/resources/cat.txt"), " Hello\n"),
             Arguments.of(listOf("src/test/resources/cat2.txt"), "wor ld\n\n!\n\n"),
-            Arguments.of(listOf(
-                "src/test/resources/cat.txt",
-                "src/test/resources/cat2.txt"
-            ), " Hello\nwor ld\n\n!\n\n"),
-            Arguments.of(listOf(
-                "src/test/resources/cat2.txt",
-                "src/test/resources/cat.txt"
-            ), "wor ld\n\n!\n\n Hello\n"),
-            Arguments.of(listOf(
-                "src/test/resources/cat.txt",
-                "src/test/resources/cat.txt",
-                "src/test/resources/cat.txt"
-            ), " Hello\n Hello\n Hello\n"),
+            Arguments.of(
+                listOf(
+                    "src/test/resources/cat.txt",
+                    "src/test/resources/cat2.txt"
+                ),
+                " Hello\nwor ld\n\n!\n\n"
+            ),
+            Arguments.of(
+                listOf(
+                    "src/test/resources/cat2.txt",
+                    "src/test/resources/cat.txt"
+                ),
+                "wor ld\n\n!\n\n Hello\n"
+            ),
+            Arguments.of(
+                listOf(
+                    "src/test/resources/cat.txt",
+                    "src/test/resources/cat.txt",
+                    "src/test/resources/cat.txt"
+                ),
+                " Hello\n Hello\n Hello\n"
+            ),
         )
     }
 }
