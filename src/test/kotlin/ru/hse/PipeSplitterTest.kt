@@ -3,14 +3,12 @@ package ru.hse
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@Ignore
 class PipeSplitterTest {
     private fun createSplitter(): PipeSplitter {
-        TODO("Return object when it's ready")
+        return PipeSplitterImpl()
     }
 
     private val splitter: PipeSplitter = createSplitter()
