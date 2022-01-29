@@ -79,14 +79,14 @@ class CommandFactoryTest {
         val error = ByteArrayOutputStream()
         val res = wc.run(input, output, error)
         assertFalse(res.needExit)
+        assertEquals("", error.toString(HseshCharsets.default))
         assertEquals(0, res.exitCode)
         assertEquals("3\n", output.toString())
-        assertEquals(0, error.size())
     }
 
     @Test
     fun `test creating not registered command and run incorrect`() {
-        val pwd = factory.create(listOf("pwd", "3"))
+        val pwd = factory.create(listOf("sleep", "-"))
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
@@ -95,7 +95,7 @@ class CommandFactoryTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("usage: pwd [-L | -P]\n", error.toString(charset))
+        assertNotEquals(0, error.size())
     }
 
     @Test
