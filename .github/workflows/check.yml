@@ -33,7 +33,7 @@ jobs:
               if: ${{ steps.build.conclusion == 'success' }}
               run: ./gradlew test
             - name: Upload a test report
-              if: ${{ steps.test.conclusion == 'failure' }}
+              if: ${{ always() }}
               uses: actions/upload-artifact@v2
               with:
                   name: test-report
