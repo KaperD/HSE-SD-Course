@@ -6,8 +6,7 @@ import ru.hse.charset.HseshCharsets
 import ru.hse.command.EchoCommand
 import ru.hse.command.ExitCommand
 import ru.hse.environment.EnvironmentImpl
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
+import java.io.*
 import java.nio.charset.Charset
 import kotlin.test.*
 
@@ -72,16 +71,33 @@ class CommandFactoryTest {
     }
 
     @Test
-    fun `test creating not registered command and run exited but command don't need it`() {
-        val wc = factory.create(listOf("echo", "3"))
-        val input = ByteArrayInputStream("123\n".toByteArray(charset))
+    fun `test creating not registered command and run with invalid input`() {
+        val cat = factory.create(listOf("cat"))
+        val input = object : InputStream() {
+            override fun read(): Int {
+                throw IOException("Hi")
+            }
+        }
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        val res = wc.run(input, output, error)
+        val res = cat.run(input, output, error)
         assertFalse(res.needExit)
-        assertEquals("", error.toString(HseshCharsets.default))
-        assertEquals(0, res.exitCode)
-        assertEquals("3\n", output.toString())
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertEquals("Hi\n", error.toString(HseshCharsets.default))
+    }
+
+    @Test
+    fun `test creating not registered command and run with invalid output`() {
+        val cat = factory.create(listOf("cat"))
+        val input = ByteArrayInputStream("123\n".toByteArray(charset))
+        val output = OutputStream.nullOutputStream()
+        output.close()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertNotEquals(0, error.size())
     }
 
     @Test

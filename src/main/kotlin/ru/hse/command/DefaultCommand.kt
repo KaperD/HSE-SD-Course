@@ -45,7 +45,7 @@ class DefaultCommand(private var command: List<String>, private val environment:
         } catch (e: IOException) {
             // Если сообщение "Stream closed" -- это значит, что команда не имеет входных данных
             if (e.message != "Stream closed") {
-                error.write(e.message)
+                error.write("${e.message}\n")
             }
             e.message == "Stream closed"
         }
