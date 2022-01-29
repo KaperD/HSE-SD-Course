@@ -1,12 +1,14 @@
 package ru.hse.executor
 
 import ru.hse.environment.Environment
-import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.executable.ExecutionResult.Companion.fail
 import ru.hse.executable.ExecutionResult.Companion.success
+import ru.hse.factory.CommandFactory
+import ru.hse.factory.PipeFactory
 import ru.hse.parser.AssignmentParser
 import ru.hse.parser.PipeParser
+import ru.hse.utils.write
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -14,7 +16,8 @@ class ExpressionExecutorImpl(
     private val assignmentParser: AssignmentParser,
     private val pipeParser: PipeParser,
     private val environment: Environment,
-    private val pipeExecutor: Executable
+    private val commandFactory: CommandFactory,
+    private val pipeFactory: PipeFactory
 ) : ExpressionExecutor {
     override fun execute(
         expression: String,
@@ -33,9 +36,12 @@ class ExpressionExecutorImpl(
         val resultPipeParser = pipeParser.parse(expression)
 
         return when {
-            resultPipeParser.isSuccess -> pipeExecutor.run(input, output, error)
+            resultPipeParser.isSuccess -> {
+                val pipe = pipeFactory.create(resultPipeParser.getOrThrow().map { commandFactory.create(it) })
+                pipe.run(input, output, error)
+            }
             else -> {
-                error.write(resultPipeParser.exceptionOrNull()?.message!!.toByteArray())
+                error.write("${resultPipeParser.exceptionOrNull()?.message}\n")
                 fail()
             }
         }
