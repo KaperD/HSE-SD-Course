@@ -124,7 +124,7 @@ class PipeFactoryTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("Cannot run program \"AoAoA\": error=2, No such file or directory", error.toString(charset))
+        assertEquals("Cannot run program \"AoAoA\": error=2, No such file or directory\n", error.toString(charset))
     }
 
     @Test

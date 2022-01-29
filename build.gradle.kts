@@ -29,7 +29,7 @@ tasks.withType<KotlinCompile>() {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("ru/hse/MainKt")
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {

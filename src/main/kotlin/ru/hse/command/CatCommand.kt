@@ -2,7 +2,7 @@ package ru.hse.command
 
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
-import ru.hse.utils.write
+import ru.hse.utils.writeln
 import java.io.*
 import kotlin.io.path.Path
 import kotlin.io.path.isReadable
@@ -82,18 +82,18 @@ class CatCommand(private val arguments: List<String>) : Executable {
     }
 
     private fun OutputStream.writeIsNotFileError(fileName: String) {
-        write("cat: $fileName: Is not a regular file\n")
+        writeln("cat: $fileName: Is not a regular file")
     }
 
     private fun OutputStream.writeNotExistsError(fileName: String) {
-        write("cat: $fileName: No such file or directory\n")
+        writeln("cat: $fileName: No such file or directory")
     }
 
     private fun OutputStream.writePermissionDeniedError(fileName: String) {
-        write("cat: $fileName: Permission denied\n")
+        writeln("cat: $fileName: Permission denied")
     }
 
     private fun OutputStream.writeIOError(message: String?) {
-        write("cat: IO problem: $message\n")
+        writeln("cat: IO problem: $message")
     }
 }

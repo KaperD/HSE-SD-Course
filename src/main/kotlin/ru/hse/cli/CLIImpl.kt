@@ -2,6 +2,7 @@ package ru.hse.cli
 
 import ru.hse.charset.HseshCharsets
 import ru.hse.utils.write
+import ru.hse.utils.writeln
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -25,7 +26,6 @@ class CLIImpl(
     }
 
     override fun showMessage(message: String) {
-        outputStream.write(message)
-        outputStream.write(newLineChar)
+        outputStream.writeln(message)
     }
 }

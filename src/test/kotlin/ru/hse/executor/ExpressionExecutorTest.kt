@@ -2,7 +2,6 @@ package ru.hse.executor
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
-import ru.hse.command.CatCommand
 import ru.hse.command.EchoCommand
 import ru.hse.command.ExitCommand
 import ru.hse.environment.EnvironmentImpl

@@ -8,7 +8,7 @@ import ru.hse.factory.CommandFactory
 import ru.hse.factory.PipeFactory
 import ru.hse.parser.AssignmentParser
 import ru.hse.parser.PipeParser
-import ru.hse.utils.write
+import ru.hse.utils.writeln
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -41,7 +41,7 @@ class ExpressionExecutorImpl(
                 pipe.run(input, output, error)
             }
             else -> {
-                error.write("${resultPipeParser.exceptionOrNull()?.message}\n")
+                error.writeln(resultPipeParser.exceptionOrNull()?.message)
                 fail()
             }
         }

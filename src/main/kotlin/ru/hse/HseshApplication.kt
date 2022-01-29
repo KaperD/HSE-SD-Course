@@ -9,8 +9,12 @@ class HseshApplication(
 ) {
     fun run() {
         while (true) {
+            val line = cli.getLine()
+            if (line.isBlank()) {
+                continue
+            }
             val executionResult = expressionExecutor.execute(
-                cli.getLine(),
+                line,
                 cli.inputStream,
                 cli.outputStream,
                 cli.errorStream
