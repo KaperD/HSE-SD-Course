@@ -16,7 +16,7 @@ class DefaultCommand(private var command: List<String>, private val environment:
         try {
             process = processBuilder.start()
         } catch (e: IOException) {
-            error.write(e.message?.toByteArray(HseshCharsets.default) ?: "".toByteArray(HseshCharsets.default))
+            error.write(e.message?.toByteArray(HseshCharsets.default) ?: byteArrayOf())
             return ExecutionResult.fail(false)
         }
         @Suppress("SwallowedException")
