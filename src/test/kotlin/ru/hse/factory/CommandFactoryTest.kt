@@ -2,18 +2,27 @@ package ru.hse.factory
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
+import ru.hse.command.CatCommand
+import ru.hse.command.EchoCommand
+import ru.hse.command.ExitCommand
+import ru.hse.command.PwdCommand
+import ru.hse.environment.EnvironmentImpl
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 import kotlin.test.*
 
-@Ignore
 class CommandFactoryTest {
     private val charset: Charset = HseshCharsets.default
 
     private fun createCommandFactory(): CommandFactory {
-        TODO("Return object when it's ready")
+        val factory = CommandFactoryImpl(EnvironmentImpl(null, mapOf()))
+        factory.registerCommand("cat", ::CatCommand)
+        factory.registerCommand("echo", ::EchoCommand)
+        factory.registerCommand("pwd", ::PwdCommand)
+        factory.registerCommand("exit") { ExitCommand() }
+        return factory
     }
 
     private val factory = createCommandFactory()
@@ -51,7 +60,7 @@ class CommandFactoryTest {
         val error = ByteArrayOutputStream()
         val res = wc.run(input, output, error)
         assertFalse(res.needExit)
-        assertNotEquals(0, res.exitCode)
+        assertEquals(0, res.exitCode)
         assertEquals("123\n", output.toString())
         assertEquals(0, error.size())
     }
@@ -80,6 +89,6 @@ class CommandFactoryTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("Put here a message", error.toString(charset))
+        assertEquals("Cannot run program \"AoAoA\": error=2, No such file or directory", error.toString(charset))
     }
 }
