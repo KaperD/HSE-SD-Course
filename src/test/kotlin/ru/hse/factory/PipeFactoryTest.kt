@@ -2,21 +2,29 @@ package ru.hse.factory
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
+import ru.hse.command.CatCommand
+import ru.hse.command.EchoCommand
+import ru.hse.command.ExitCommand
+import ru.hse.command.PwdCommand
+import ru.hse.environment.EnvironmentImpl
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 import kotlin.test.*
 
-@Ignore
 class PipeFactoryTest {
     private val charset: Charset = HseshCharsets.default
 
-    private fun createPipeFactory(): PipeFactory {
-        TODO("Return object when it's ready")
-    }
+    private fun createPipeFactory(): PipeFactory = PipeFactoryImpl()
 
     private fun createCommandFactory(): CommandFactory {
-        TODO("Return object when it's ready")
+        val factory = CommandFactoryImpl(EnvironmentImpl(null))
+        factory.registerCommand("echo") { EchoCommand(it) }
+        factory.registerCommand("cat") { CatCommand(it) }
+        factory.registerCommand("exit") { ExitCommand() }
+        factory.registerCommand("pwd") { PwdCommand(it) }
+//        factory.registerCommand("wc") { WcCommand(it) }
+        return factory
     }
 
     private val pipeFactory = createPipeFactory()
@@ -81,7 +89,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertTrue(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(0, output.size())
+        assertEquals("Bye\n", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
@@ -98,7 +106,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertTrue(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(0, output.size())
+        assertEquals("Bye\n", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
@@ -116,7 +124,7 @@ class PipeFactoryTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("Put here a message", error.toString(charset))
+        assertEquals("Cannot run program \"AoAoA\": error=2, No such file or directory", error.toString(charset))
     }
 
     @Test
@@ -132,15 +140,15 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertTrue(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(0, output.size())
+        assertEquals("Bye\n", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
     @Test
     fun `test incorrect not exit pipe multiple commands`() {
         val echo = commandFactory.create(listOf("echo", "3"))
-        val wc = commandFactory.create(listOf("wc", "3"))
-        val pipe = pipeFactory.create(listOf(echo, wc))
+        val pwd = commandFactory.create(listOf("pwd", "3"))
+        val pipe = pipeFactory.create(listOf(echo, pwd))
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()

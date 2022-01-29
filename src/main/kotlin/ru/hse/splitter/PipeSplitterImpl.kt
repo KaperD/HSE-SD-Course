@@ -1,5 +1,7 @@
 package ru.hse.splitter
 
+import ru.hse.utils.failure
+
 class PipeSplitterImpl : PipeSplitter {
     override fun split(tokens: List<String>): Result<List<List<String>>> {
         val splitPipe = mutableListOf<List<String>>()
@@ -19,7 +21,7 @@ class PipeSplitterImpl : PipeSplitter {
         }
 
         if (splitPipe.any { it.isEmpty() }) {
-            return Result.failure(RuntimeException("There is empty command in pipe"))
+            return failure("There is empty command in pipe")
         }
 
         return Result.success(splitPipe)

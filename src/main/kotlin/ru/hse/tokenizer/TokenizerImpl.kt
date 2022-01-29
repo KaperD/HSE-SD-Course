@@ -1,8 +1,10 @@
 package ru.hse.tokenizer
 
+import ru.hse.utils.failure
+
 class TokenizerImpl : Tokenizer {
     private val validToken = "(\\||('[^']*'|\"[^\"]*\"|[^'\"|\\s]+)+)\\s*".toRegex()
-    private val failure: Result<List<String>> = Result.failure(RuntimeException("Invalid expression for tokenization"))
+    private val failure: Result<List<String>> = failure("Invalid expression for tokenization")
 
     override fun tokenize(expression: String): Result<List<String>> {
         val trimmedExpression = expression.trim()
