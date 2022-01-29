@@ -56,7 +56,7 @@ class CLITest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
-        assertEquals(s, String(cli.getInputStream().readAllBytes(), charset))
+        assertEquals(s, String(cli.inputStream.readAllBytes(), charset))
     }
 
     @Test
@@ -66,7 +66,7 @@ class CLITest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
-        cli.getOutputStream().write(s)
+        cli.outputStream.write(s)
         assertEquals(s, output.toString(charset))
     }
 
@@ -77,7 +77,7 @@ class CLITest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
-        cli.getErrorStream().write(s)
+        cli.errorStream.write(s)
         assertEquals(s, error.toString(charset))
     }
 }

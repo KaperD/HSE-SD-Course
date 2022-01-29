@@ -11,9 +11,9 @@ class HseshApplication(
         while (true) {
             val executionResult = expressionExecutor.execute(
                 cli.getLine(),
-                cli.getInputStream(),
-                cli.getOutputStream(),
-                cli.getErrorStream()
+                cli.inputStream,
+                cli.outputStream,
+                cli.errorStream
             )
             if (executionResult.needExit) {
                 return
