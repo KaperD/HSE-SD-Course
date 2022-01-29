@@ -2,6 +2,7 @@ package ru.hse.cli
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
+import ru.hse.utils.write
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -65,7 +66,7 @@ class CLITest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
-        cli.getOutputStream().write(s.toByteArray(charset))
+        cli.getOutputStream().write(s)
         assertEquals(s, output.toString(charset))
     }
 
@@ -76,7 +77,7 @@ class CLITest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
-        cli.getErrorStream().write(s.toByteArray(charset))
+        cli.getErrorStream().write(s)
         assertEquals(s, error.toString(charset))
     }
 }

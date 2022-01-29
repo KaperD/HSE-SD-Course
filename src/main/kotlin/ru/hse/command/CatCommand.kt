@@ -1,10 +1,13 @@
 package ru.hse.command
 
-import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
+import ru.hse.utils.write
 import java.io.*
-import kotlin.io.path.*
+import kotlin.io.path.Path
+import kotlin.io.path.isReadable
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.notExists
 
 class CatCommand(private val arguments: List<String>) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
@@ -17,15 +20,15 @@ class CatCommand(private val arguments: List<String>) : Executable {
     private fun processEmptyArgumentList(
         input: InputStream,
         output: OutputStream,
-        ignored: OutputStream
+        error: OutputStream
     ): ExecutionResult {
-        @Suppress("SwallowedException")
         try {
             input.transferTo(output)
         } catch (e: IOException) {
-            return ExecutionResult.fail(true)
+            error.writeIOError(e.message)
+            return ExecutionResult.fail()
         }
-        return ExecutionResult.success(false)
+        return ExecutionResult.success()
     }
 
     private fun processNotEmptyArgumentList(
@@ -42,7 +45,7 @@ class CatCommand(private val arguments: List<String>) : Executable {
             }
             @Suppress("SwallowedException")
             try {
-                File(fileName).inputStream().use {
+                File(fileName).inputStream().buffered().use {
                     it.transferTo(output)
                 }
             } catch (e: SecurityException) {
@@ -52,10 +55,11 @@ class CatCommand(private val arguments: List<String>) : Executable {
                 isSuccessful = false
                 error.writeIsNotFileError(fileName)
             } catch (e: IOException) {
-                return ExecutionResult.fail(true)
+                isSuccessful = false
+                error.writeIOError(e.message)
             }
         }
-        return if (isSuccessful) ExecutionResult.success(false) else ExecutionResult.fail(false)
+        return if (isSuccessful) ExecutionResult.success() else ExecutionResult.fail()
     }
 
     private fun checkFile(fileName: String, error: OutputStream): Boolean {
@@ -77,19 +81,19 @@ class CatCommand(private val arguments: List<String>) : Executable {
         }
     }
 
-    private fun OutputStream.writeError(message: String) {
-        this.write(message.toByteArray(charset = HseshCharsets.default))
-    }
-
     private fun OutputStream.writeIsNotFileError(fileName: String) {
-        this.writeError("cat: $fileName: Is not a regular file\n")
+        write("cat: $fileName: Is not a regular file\n")
     }
 
     private fun OutputStream.writeNotExistsError(fileName: String) {
-        this.writeError("cat: $fileName: No such file or directory\n")
+        write("cat: $fileName: No such file or directory\n")
     }
 
     private fun OutputStream.writePermissionDeniedError(fileName: String) {
-        this.writeError("cat: $fileName: Permission denied\n")
+        write("cat: $fileName: Permission denied\n")
+    }
+
+    private fun OutputStream.writeIOError(message: String?) {
+        write("cat: IO problem: $message\n")
     }
 }

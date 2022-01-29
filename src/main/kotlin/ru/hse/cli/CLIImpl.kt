@@ -1,6 +1,7 @@
 package ru.hse.cli
 
 import ru.hse.charset.HseshCharsets
+import ru.hse.utils.write
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -13,7 +14,7 @@ class CLIImpl(
     private val newLineChar: Int = "\n".toByteArray(HseshCharsets.default)[0].toInt()
 
     override fun getLine(): String {
-        output.write("> ".toByteArray(HseshCharsets.default))
+        output.write("> ")
         val builder = ByteArrayOutputStream()
         var c = input.read()
         while (c != newLineChar) {
@@ -24,7 +25,7 @@ class CLIImpl(
     }
 
     override fun showMessage(message: String) {
-        output.write(message.toByteArray(HseshCharsets.default))
+        output.write(message)
         output.write(newLineChar)
     }
 

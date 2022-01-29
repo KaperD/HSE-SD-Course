@@ -76,23 +76,22 @@ class CatCommandTest {
         output.close()
         val error = ByteArrayOutputStream()
         val res = cat.run(input, output, error)
-        assertTrue(res.needExit)
+        assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
-        assertEquals(0, error.size())
+        assertEquals("cat: IO problem: Stream closed\n", error.toString(HseshCharsets.default))
     }
 
     @Test
     fun `test closed output with input`() {
         val cat = createCatCommand(emptyList())
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
+        val input = ByteArrayInputStream("Hello\n".toByteArray(HseshCharsets.default))
         val output = OutputStream.nullOutputStream()
         output.close()
         val error = ByteArrayOutputStream()
         val res = cat.run(input, output, error)
-        assertTrue(res.needExit)
+        assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
-        assertEquals(0, error.size())
+        assertEquals("cat: IO problem: Stream closed\n", error.toString(HseshCharsets.default))
     }
 
     @Test
