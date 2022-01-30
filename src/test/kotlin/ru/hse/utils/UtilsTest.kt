@@ -15,4 +15,13 @@ class UtilsTest {
         output.write("Hello")
         assertEquals("Hello", output.toString(HseshCharsets.default))
     }
+
+    @Test
+    fun `test writeln to output stream`() {
+        val output = ByteArrayOutputStream()
+        output.writeln(null as String?)
+        assertEquals(0, output.size())
+        output.writeln("Hello")
+        assertEquals("Hello\n", output.toString(HseshCharsets.default))
+    }
 }
