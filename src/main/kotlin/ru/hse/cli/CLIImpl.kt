@@ -18,7 +18,7 @@ class CLIImpl(
         outputStream.write("> ")
         val builder = ByteArrayOutputStream()
         var c = inputStream.read()
-        while (c != newLineChar) {
+        while (c != newLineChar && c != -1) {
             builder.write(c)
             c = inputStream.read()
         }
