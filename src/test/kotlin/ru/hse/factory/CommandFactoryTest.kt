@@ -128,6 +128,19 @@ class CommandFactoryTest {
     }
 
     @Test
+    fun `test creating not registered command and run correct with System in as input`() {
+        val wc = factory.create(listOf("echo", "3"))
+        val input = System.`in`
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = wc.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
+        assertEquals("3\n", output.toString())
+        assertEquals(0, error.size())
+    }
+
+    @Test
     fun `test registering existing command`() {
         factory.registerCommand("MyCommand") { ExitCommand() }
         assertThrows<IllegalStateException> { factory.registerCommand("MyCommand") { EchoCommand(it) } }

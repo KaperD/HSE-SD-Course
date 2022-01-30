@@ -88,7 +88,6 @@ class HseshApplicationTest {
                     echo   4|cat
                     echo '3'|sleep 0
                     exit
-
                 """.trimIndent(),
                 """
                     > 3
