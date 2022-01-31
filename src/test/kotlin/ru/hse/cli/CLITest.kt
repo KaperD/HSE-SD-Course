@@ -2,11 +2,13 @@ package ru.hse.cli
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
+import ru.hse.utils.trimMarginCrossPlatform
 import ru.hse.utils.write
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.assertEquals
 
@@ -19,7 +21,7 @@ class CLITest {
 
     @Test
     fun `test read line`() {
-        val input = ByteArrayInputStream("Hello   \n   World\n".toByteArray(charset))
+        val input = ByteArrayInputStream("Hello   ${lineSeparator()}   World${lineSeparator()}".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
@@ -29,7 +31,13 @@ class CLITest {
 
     @Test
     fun `test read empty lines`() {
-        val input = ByteArrayInputStream("\n\n\n".toByteArray(charset))
+        val input = ByteArrayInputStream(
+            """
+                |
+                |
+                |
+            """.trimMarginCrossPlatform().toByteArray(charset)
+        )
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
@@ -44,14 +52,17 @@ class CLITest {
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
         cli.showMessage("Hello")
-        cli.showMessage(" \n")
+        cli.showMessage(" ${lineSeparator()}")
         cli.showMessage("World")
-        assertEquals("Hello\n \n\nWorld\n", output.toString(charset))
+        assertEquals(
+            "Hello${lineSeparator()} ${lineSeparator()}${lineSeparator()}World${lineSeparator()}",
+            output.toString(charset)
+        )
     }
 
     @Test
     fun `test get input stream`() {
-        val s = "Hello \n world"
+        val s = "Hello ${lineSeparator()} world"
         val input = ByteArrayInputStream(s.toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
@@ -61,7 +72,7 @@ class CLITest {
 
     @Test
     fun `test get output stream`() {
-        val s = "Hello \n world"
+        val s = "Hello ${lineSeparator()} world"
         val input = ByteArrayInputStream("".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
@@ -72,7 +83,7 @@ class CLITest {
 
     @Test
     fun `test get error stream`() {
-        val s = "Hello \n world"
+        val s = "Hello ${lineSeparator()} world"
         val input = ByteArrayInputStream("".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()

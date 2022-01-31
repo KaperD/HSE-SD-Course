@@ -9,7 +9,8 @@ class SystemEnvironmentTest {
     fun `test system environment works`() {
         val env: Environment = EnvironmentImpl(null, System.getenv())
         val map = System.getenv()
-        assertEquals(map["HOME"], env.get("HOME"))
+        val key = map.entries.first().key
+        assertEquals(map[key], env.get(key))
         assertEquals(map.getOrDefault("AoAoA", ""), env.get("AoAoA"))
     }
 }

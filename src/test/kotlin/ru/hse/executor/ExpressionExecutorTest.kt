@@ -16,6 +16,7 @@ import ru.hse.validator.VarNameValidatorImpl
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import java.lang.System.lineSeparator
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
@@ -65,7 +66,7 @@ class ExpressionExecutorTest {
         val res = executor.execute(" echo  3  |cat| cat", input, output, error)
         assertEquals(0, res.exitCode)
         assertFalse(res.needExit)
-        assertEquals("3\n", output.toString(HseshCharsets.default))
+        assertEquals("3${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
@@ -90,14 +91,14 @@ class ExpressionExecutorTest {
         var res = executor.execute(" echo  3  |exit| cat", input, output, error)
         assertEquals(0, res.exitCode)
         assertTrue(res.needExit)
-        assertEquals("Bye\n", output.toString(HseshCharsets.default))
+        assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
 
         output.reset()
         res = executor.execute("exit", input, output, error)
         assertEquals(0, res.exitCode)
         assertTrue(res.needExit)
-        assertEquals("Bye\n", output.toString(HseshCharsets.default))
+        assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
@@ -111,13 +112,13 @@ class ExpressionExecutorTest {
         assertNotEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals(0, output.size())
-        assertEquals("Invalid expression for tokenization\n", error.toString(HseshCharsets.default))
+        assertEquals("Invalid expression for tokenization${lineSeparator()}", error.toString(HseshCharsets.default))
 
         error.reset()
         res = executor.execute("echo 3 | | cat", input, output, error)
         assertNotEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals(0, output.size())
-        assertEquals("There is empty command in pipe\n", error.toString(HseshCharsets.default))
+        assertEquals("There is empty command in pipe${lineSeparator()}", error.toString(HseshCharsets.default))
     }
 }

@@ -18,6 +18,7 @@ import ru.hse.parser.PipeParser
 import ru.hse.splitter.PipeSplitterImpl
 import ru.hse.substitutor.SubstitutorImpl
 import ru.hse.tokenizer.TokenizerImpl
+import ru.hse.utils.trimIndentCrossPlatform
 import ru.hse.validator.VarNameValidatorImpl
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -73,13 +74,13 @@ class HseshApplicationTest {
                     echo 3 | sleep 0
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > 3
                     > 4
                     > > Bye
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 ""
             ),
             Arguments.of(
@@ -88,13 +89,13 @@ class HseshApplicationTest {
                     echo   4|cat
                     echo '3'|sleep 0
                     exit
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > 3
                     > 4
                     > > Bye
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 ""
             ),
             Arguments.of(
@@ -104,12 +105,12 @@ class HseshApplicationTest {
 
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > 3
                     > > > Bye
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 ""
             ),
             Arguments.of(
@@ -119,12 +120,12 @@ class HseshApplicationTest {
                     ${'$'}x${'$'}y 3
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > > > 3
                     > Bye
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 ""
             ),
             Arguments.of(
@@ -133,12 +134,12 @@ class HseshApplicationTest {
                     cat ${'$'}FILE
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > > Hello
                     > Bye
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 ""
             ),
             Arguments.of(
@@ -148,23 +149,23 @@ class HseshApplicationTest {
                     echo ${'$'}a
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > > > 4
                     > Bye
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 ""
             ),
             Arguments.of(
                 """
                     echo 3 | exit | echo 3
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > Bye
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 ""
             ),
             Arguments.of(
@@ -172,36 +173,45 @@ class HseshApplicationTest {
                     echo 3' | exit | echo 3
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > > Bye
 
-                """.trimIndent(),
-                "Invalid expression for tokenization\n"
+                """.trimIndentCrossPlatform(),
+                """
+                    Invalid expression for tokenization
+
+                """.trimIndentCrossPlatform()
             ),
             Arguments.of(
                 """
                     pwd 3 | exit
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > > Bye
 
-                """.trimIndent(),
-                "pwd: too many arguments\n"
+                """.trimIndentCrossPlatform(),
+                """
+                    pwd: too many arguments
+
+                """.trimIndentCrossPlatform()
             ),
             Arguments.of(
                 """
                     echo 3 | exit |
                     exit
 
-                """.trimIndent(),
+                """.trimIndentCrossPlatform(),
                 """
                     > > Bye
 
-                """.trimIndent(),
-                "There is empty command in pipe\n"
+                """.trimIndentCrossPlatform(),
+                """
+                    There is empty command in pipe
+
+                """.trimIndentCrossPlatform()
             ),
         )
     }

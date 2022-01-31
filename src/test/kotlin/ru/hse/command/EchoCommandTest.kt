@@ -7,6 +7,7 @@ import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.lang.System.lineSeparator
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
@@ -33,11 +34,11 @@ class EchoCommandTest {
     companion object {
         @JvmStatic
         fun echoData() = listOf(
-            Arguments.of(listOf("Hello", "world", "!"), "Hello world !\n"),
-            Arguments.of(listOf<String>(), "\n"),
-            Arguments.of(listOf("", "", "!"), "  !\n"),
-            Arguments.of(listOf("!", "", ""), "!  \n"),
-            Arguments.of(listOf("", "", "!", "", ""), "  !  \n"),
+            Arguments.of(listOf("Hello", "world", "!"), "Hello world !${lineSeparator()}"),
+            Arguments.of(listOf<String>(), lineSeparator()),
+            Arguments.of(listOf("", "", "!"), "  !${lineSeparator()}"),
+            Arguments.of(listOf("!", "", ""), "!  ${lineSeparator()}"),
+            Arguments.of(listOf("", "", "!", "", ""), "  !  ${lineSeparator()}"),
         )
     }
 }

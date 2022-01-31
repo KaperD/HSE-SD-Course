@@ -6,7 +6,10 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
+import ru.hse.utils.trimIndentCrossPlatform
+import ru.hse.utils.trimMarginCrossPlatform
 import java.io.*
+import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.attribute.PosixFilePermissions
@@ -16,7 +19,6 @@ import kotlin.io.path.pathString
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 
 class CatCommandTest {
     private val charset: Charset = HseshCharsets.default
@@ -29,13 +31,13 @@ class CatCommandTest {
     fun `test empty args`() {
         val cat = createCatCommand(emptyList())
 
-        val input = ByteArrayInputStream("Hello \n World".toByteArray(charset))
+        val input = ByteArrayInputStream("Hello ${lineSeparator()} World".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val res = cat.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("Hello \n World", output.toString(charset))
+        assertEquals("Hello ${lineSeparator()} World", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -50,7 +52,7 @@ class CatCommandTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("cat: AoAoA: No such file or directory\n", error.toString(charset))
+        assertEquals("cat: AoAoA: No such file or directory${lineSeparator()}", error.toString(charset))
     }
 
     @Test
@@ -63,8 +65,8 @@ class CatCommandTest {
         val res = cat.run(input, output, error)
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
-        assertEquals(" Hello\n", output.toString(charset))
-        assertEquals("cat: AoAoA: No such file or directory\n", error.toString(charset))
+        assertEquals(" Hello${lineSeparator()}", output.toString(charset))
+        assertEquals("cat: AoAoA: No such file or directory${lineSeparator()}", error.toString(charset))
     }
 
     @Test
@@ -78,27 +80,31 @@ class CatCommandTest {
         val res = cat.run(input, output, error)
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
-        assertEquals("cat: IO problem: Stream closed\n", error.toString(HseshCharsets.default))
+        assertEquals("cat: IO problem: Stream closed${lineSeparator()}", error.toString(HseshCharsets.default))
     }
 
     @Test
     fun `test closed output with input`() {
         val cat = createCatCommand(emptyList())
-        val input = ByteArrayInputStream("Hello\n".toByteArray(HseshCharsets.default))
+        val input = ByteArrayInputStream("Hello${lineSeparator()}".toByteArray(HseshCharsets.default))
         val output = OutputStream.nullOutputStream()
         output.close()
         val error = ByteArrayOutputStream()
         val res = cat.run(input, output, error)
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
-        assertEquals("cat: IO problem: Stream closed\n", error.toString(HseshCharsets.default))
+        assertEquals("cat: IO problem: Stream closed${lineSeparator()}", error.toString(HseshCharsets.default))
     }
 
     @Test
     fun `test unreadable file`() {
-        val unreadable = Path.of("src/test/resources/unreadable.txt")
-            .createFile(PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("-wx-wx-wx")))
-        val cat = createCatCommand(listOf("src/test/resources/cat.txt", unreadable.pathString))
+        val unreadable = File("src/test/resources/unreadable.txt")
+        unreadable.createNewFile()
+        unreadable.deleteOnExit()
+        if (!unreadable.setReadable(false)) {
+            return
+        }
+        val cat = createCatCommand(listOf("src/test/resources/cat.txt", unreadable.path))
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
@@ -106,9 +112,11 @@ class CatCommandTest {
         val res = cat.run(input, output, error)
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
-        assertEquals(" Hello\n", output.toString(charset))
-        assertEquals("cat: src/test/resources/unreadable.txt: Permission denied\n", error.toString(charset))
-        unreadable.deleteExisting()
+        assertEquals(" Hello${lineSeparator()}", output.toString(charset))
+        assertEquals(
+            "cat: src/test/resources/unreadable.txt: Permission denied${lineSeparator()}",
+            error.toString(charset)
+        )
     }
 
     @Test
@@ -122,7 +130,7 @@ class CatCommandTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("cat: src: Is not a regular file\n", error.toString(charset))
+        assertEquals("cat: src: Is not a regular file${lineSeparator()}", error.toString(charset))
     }
 
     @ParameterizedTest
@@ -143,21 +151,50 @@ class CatCommandTest {
     companion object {
         @JvmStatic
         fun catData() = listOf(
-            Arguments.of(listOf("src/test/resources/cat.txt"), " Hello\n"),
-            Arguments.of(listOf("src/test/resources/cat2.txt"), "wor ld\n\n!\n\n"),
+            Arguments.of(
+                listOf("src/test/resources/cat.txt"),
+                """
+                    | Hello
+                    |
+                """.trimMarginCrossPlatform()
+            ),
+            Arguments.of(
+                listOf("src/test/resources/cat2.txt"),
+                """
+                    wor ld
+
+                    !
+
+
+                """.trimIndentCrossPlatform()
+            ),
             Arguments.of(
                 listOf(
                     "src/test/resources/cat.txt",
                     "src/test/resources/cat2.txt"
                 ),
-                " Hello\nwor ld\n\n!\n\n"
+                """
+                    | Hello
+                    |wor ld
+                    |
+                    |!
+                    |
+                    |
+                """.trimMarginCrossPlatform()
             ),
             Arguments.of(
                 listOf(
                     "src/test/resources/cat2.txt",
                     "src/test/resources/cat.txt"
                 ),
-                "wor ld\n\n!\n\n Hello\n"
+                """
+                    |wor ld
+                    |
+                    |!
+                    |
+                    | Hello
+                    |
+                """.trimMarginCrossPlatform()
             ),
             Arguments.of(
                 listOf(
@@ -165,7 +202,12 @@ class CatCommandTest {
                     "src/test/resources/cat.txt",
                     "src/test/resources/cat.txt"
                 ),
-                " Hello\n Hello\n Hello\n"
+                """
+                    | Hello
+                    | Hello
+                    | Hello
+                    |
+                """.trimMarginCrossPlatform()
             ),
         )
     }

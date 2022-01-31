@@ -9,6 +9,7 @@ import ru.hse.command.PwdCommand
 import ru.hse.environment.EnvironmentImpl
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.*
 
@@ -41,7 +42,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("3\n", output.toString(charset))
+        assertEquals("3${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -57,7 +58,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("1 1 4\n", output.toString(charset))
+        assertEquals("1 1 4${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -66,13 +67,13 @@ class PipeFactoryTest {
         val wc = commandFactory.create(listOf("wc"))
         val cat = commandFactory.create(listOf("cat"))
         val pipe = pipeFactory.create(listOf(wc, cat))
-        val input = ByteArrayInputStream("123\n".toByteArray(charset))
+        val input = ByteArrayInputStream("123${lineSeparator()}".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("1 1 4\n", output.toString(charset))
+        assertEquals("1 1 4${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -89,7 +90,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertTrue(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("Bye\n", output.toString(HseshCharsets.default))
+        assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
@@ -106,7 +107,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertTrue(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("Bye\n", output.toString(HseshCharsets.default))
+        assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
@@ -124,7 +125,7 @@ class PipeFactoryTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("Cannot run program \"AoAoA\": error=2, No such file or directory\n", error.toString(charset))
+        assertNotEquals(0, error.size())
     }
 
     @Test
@@ -140,7 +141,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertTrue(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("Bye\n", output.toString(HseshCharsets.default))
+        assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 
@@ -157,6 +158,6 @@ class PipeFactoryTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("pwd: too many arguments\n", error.toString(charset))
+        assertEquals("pwd: too many arguments${lineSeparator()}", error.toString(charset))
     }
 }

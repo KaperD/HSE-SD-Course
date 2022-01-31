@@ -7,6 +7,7 @@ import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.lang.System.lineSeparator
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -24,7 +25,7 @@ class ExitCommandTest {
         val res = exit.run(input, output, error)
         assertTrue(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("Bye\n", output.toString(HseshCharsets.default))
+        assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
     }
 

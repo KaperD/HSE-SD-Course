@@ -5,6 +5,7 @@ import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -25,7 +26,7 @@ class PwdCommandTest {
         val res = pwd.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(System.getProperty("user.dir") + "\n", output.toString(charset))
+        assertEquals(System.getProperty("user.dir") + lineSeparator(), output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -40,6 +41,6 @@ class PwdCommandTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("pwd: too many arguments\n", error.toString(charset))
+        assertEquals("pwd: too many arguments${lineSeparator()}", error.toString(charset))
     }
 }

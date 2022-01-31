@@ -8,6 +8,7 @@ import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
@@ -25,13 +26,13 @@ class WcCommandTest {
     @Test
     fun `test empty args`() {
         val wc = createWcCommand(emptyList())
-        val input = ByteArrayInputStream("123 ы\n".toByteArray(charset))
+        val input = ByteArrayInputStream("123 ы${lineSeparator()}".toByteArray(charset))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val res = wc.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("1 2 7\n", output.toString(charset))
+        assertEquals("1 2 7${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -46,7 +47,7 @@ class WcCommandTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertEquals("wc: AoAoA: No such file or directory\n", error.toString(charset))
+        assertEquals("wc: AoAoA: No such file or directory${lineSeparator()}", error.toString(charset))
     }
 
     @ParameterizedTest
@@ -67,11 +68,26 @@ class WcCommandTest {
     companion object {
         @JvmStatic
         fun wcData() = listOf(
-            Arguments.of(listOf("wc.txt"), "1 2 9 wc.txt\n"),
-            Arguments.of(listOf("wc2.txt"), "3 2 17 wc2.txt\n"),
-            Arguments.of(listOf("wc.txt", "wc2.txt"), "1 2 9 wc.txt\n3 2 17 wc2.txt\n"),
-            Arguments.of(listOf("wc2.txt", "wc.txt"), "3 2 17 wc2.txt\n1 2 9 wc.txt\n"),
-            Arguments.of(listOf("wc.txt", "wc.txt", "wc.txt"), "1 2 9 wc.txt\n1 2 9 wc.txt\n1 2 9 wc.txt\n"),
+            Arguments.of(
+                listOf("wc.txt"),
+                "1 2 9 wc.txt${lineSeparator()}"
+            ),
+            Arguments.of(
+                listOf("wc2.txt"),
+                "3 2 17 wc2.txt${lineSeparator()}"
+            ),
+            Arguments.of(
+                listOf("wc.txt", "wc2.txt"),
+                "1 2 9 wc.txt${lineSeparator()}3 2 17 wc2.txt${lineSeparator()}"
+            ),
+            Arguments.of(
+                listOf("wc2.txt", "wc.txt"),
+                "3 2 17 wc2.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}"
+            ),
+            Arguments.of(
+                listOf("wc.txt", "wc.txt", "wc.txt"),
+                "1 2 9 wc.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}"
+            ),
         )
     }
 }
