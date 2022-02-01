@@ -9,7 +9,7 @@ import ru.hse.factory.PipeFactory
 import ru.hse.parser.AssignmentParser
 import ru.hse.parser.PipeParser
 import ru.hse.utils.writeln
-import java.io.InputStream
+import java.io.File
 import java.io.OutputStream
 
 class ExpressionExecutorImpl(
@@ -21,7 +21,7 @@ class ExpressionExecutorImpl(
 ) : ExpressionExecutor {
     override fun execute(
         expression: String,
-        input: InputStream,
+        file: File?,
         output: OutputStream,
         error: OutputStream
     ): ExecutionResult {
@@ -38,7 +38,11 @@ class ExpressionExecutorImpl(
         return when {
             resultPipeParser.isSuccess -> {
                 val pipe = pipeFactory.create(resultPipeParser.getOrThrow().map { commandFactory.create(it) })
-                pipe.run(input, output, error)
+                if (file != null) {
+                    pipe.run(file, output, error)
+                } else {
+                    pipe.runInheritInput(output, error)
+                }
             }
             else -> {
                 error.writeln(resultPipeParser.exceptionOrNull()?.message)

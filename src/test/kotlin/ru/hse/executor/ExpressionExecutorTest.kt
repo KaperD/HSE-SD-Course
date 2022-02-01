@@ -13,9 +13,8 @@ import ru.hse.splitter.PipeSplitterImpl
 import ru.hse.substitutor.SubstitutorImpl
 import ru.hse.tokenizer.TokenizerImpl
 import ru.hse.validator.VarNameValidatorImpl
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import java.io.File
 import java.lang.System.lineSeparator
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -43,15 +42,14 @@ class ExpressionExecutorTest {
 
     @Test
     fun `test assignment expressions`() {
-        val input = ByteArrayInputStream(ByteArray(0))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        var res = executor.execute("  b=0  ", input, output, error)
+        var res = executor.execute("  b=0  ", null, output, error)
         assertEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals("0", environment.get("b"))
 
-        res = executor.execute("  c='${'$'}b='${'$'}b  ", input, output, error)
+        res = executor.execute("  c='${'$'}b='${'$'}b  ", null, output, error)
         assertEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals("${'$'}b=0", environment.get("c"))
@@ -59,11 +57,9 @@ class ExpressionExecutorTest {
 
     @Test
     fun `test pipe expressions not exit`() {
-        val input = InputStream.nullInputStream()
-        input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        val res = executor.execute(" echo  3  |cat| cat", input, output, error)
+        val res = executor.execute(" echo  3  |cat| cat", null, output, error)
         assertEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals("3${lineSeparator()}", output.toString(HseshCharsets.default))
@@ -72,10 +68,12 @@ class ExpressionExecutorTest {
 
     @Test
     fun `test pipe expressions not exit with input`() {
-        val input = ByteArrayInputStream("Hello".toByteArray(HseshCharsets.default))
+        val file = File.createTempFile("test", null)
+        file.deleteOnExit()
+        file.writeBytes("Hello".toByteArray(HseshCharsets.default))
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        val res = executor.execute(" cat  | cat | cat", input, output, error)
+        val res = executor.execute(" cat  | cat | cat", file, output, error)
         assertEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals("Hello", output.toString(HseshCharsets.default))
@@ -84,18 +82,16 @@ class ExpressionExecutorTest {
 
     @Test
     fun `test pipe expressions exit`() {
-        val input = InputStream.nullInputStream()
-        input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        var res = executor.execute(" echo  3  |exit| cat", input, output, error)
+        var res = executor.execute(" echo  3  |exit| cat", null, output, error)
         assertEquals(0, res.exitCode)
         assertTrue(res.needExit)
         assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
 
         output.reset()
-        res = executor.execute("exit", input, output, error)
+        res = executor.execute("exit", null, output, error)
         assertEquals(0, res.exitCode)
         assertTrue(res.needExit)
         assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
@@ -104,18 +100,16 @@ class ExpressionExecutorTest {
 
     @Test
     fun `test wrong expression`() {
-        val input = InputStream.nullInputStream()
-        input.close()
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
-        var res = executor.execute("echo 3 | echo '", input, output, error)
+        var res = executor.execute("echo 3 | echo '", null, output, error)
         assertNotEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals(0, output.size())
         assertEquals("Invalid expression for tokenization${lineSeparator()}", error.toString(HseshCharsets.default))
 
         error.reset()
-        res = executor.execute("echo 3 | | cat", input, output, error)
+        res = executor.execute("echo 3 | | cat", null, output, error)
         assertNotEquals(0, res.exitCode)
         assertFalse(res.needExit)
         assertEquals(0, output.size())

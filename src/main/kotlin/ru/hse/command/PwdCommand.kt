@@ -3,12 +3,16 @@ package ru.hse.command
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.utils.writeln
-import java.io.InputStream
+import java.io.File
 import java.io.OutputStream
 import java.nio.file.Paths
 
 class PwdCommand(private val args: List<String>) : Executable {
-    override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
+    override fun run(file: File, output: OutputStream, error: OutputStream): ExecutionResult {
+        return runInheritInput(output, error)
+    }
+
+    override fun runInheritInput(output: OutputStream, error: OutputStream): ExecutionResult {
         if (args.isNotEmpty()) {
             error.writeln("pwd: too many arguments")
             return ExecutionResult.fail()

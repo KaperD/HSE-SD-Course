@@ -3,13 +3,9 @@ package ru.hse.command
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
+import ru.hse.testExecutable
 import java.lang.System.lineSeparator
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 
 class EchoCommandTest {
     private fun createEchoCommand(args: List<String>): Executable {
@@ -18,17 +14,16 @@ class EchoCommandTest {
 
     @ParameterizedTest
     @MethodSource("echoData")
-    fun `test valid assignment`(args: List<String>, expectedOutput: String) {
+    fun `test echo`(args: List<String>, expectedOutput: String) {
         val echo: Executable = createEchoCommand(args)
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
-        val output = ByteArrayOutputStream()
-        val error = ByteArrayOutputStream()
-        val res = echo.run(input, output, error)
-        assertFalse(res.needExit)
-        assertEquals(0, res.exitCode)
-        assertEquals(expectedOutput, output.toString(HseshCharsets.default))
-        assertEquals(0, error.size())
+        testExecutable(
+            echo,
+            input = "",
+            expectedOutput = expectedOutput,
+            expectedError = "",
+            expectedIsZeroExitCode = true,
+            expectedNeedExit = false
+        )
     }
 
     companion object {

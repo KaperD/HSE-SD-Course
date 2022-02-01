@@ -10,7 +10,17 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.notExists
 
 class CatCommand(private val arguments: List<String>) : Executable {
-    override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
+    override fun run(file: File, output: OutputStream, error: OutputStream): ExecutionResult {
+        return file.inputStream().buffered().use {
+            run(it, output, error)
+        }
+    }
+
+    override fun runInheritInput(output: OutputStream, error: OutputStream): ExecutionResult {
+        return run(System.`in`, output, error)
+    }
+
+    private fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         return when {
             arguments.isEmpty() -> processEmptyArgumentList(input, output, error)
             else -> processNotEmptyArgumentList(input, output, error)

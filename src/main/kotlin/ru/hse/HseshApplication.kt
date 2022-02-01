@@ -15,7 +15,7 @@ class HseshApplication(
             }
             val executionResult = expressionExecutor.execute(
                 line,
-                cli.inputStream,
+                null,
                 cli.outputStream,
                 cli.errorStream
             )

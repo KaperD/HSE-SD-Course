@@ -6,23 +6,18 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
+import ru.hse.testExecutable
 import ru.hse.utils.trimIndentCrossPlatform
 import ru.hse.utils.trimMarginCrossPlatform
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.OutputStream
 import java.lang.System.lineSeparator
-import java.nio.charset.Charset
-import java.nio.file.Path
-import java.nio.file.attribute.PosixFilePermissions
-import kotlin.io.path.createFile
-import kotlin.io.path.deleteExisting
-import kotlin.io.path.pathString
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 
 class CatCommandTest {
-    private val charset: Charset = HseshCharsets.default
-
     private fun createCatCommand(args: List<String>): Executable {
         return CatCommand(args)
     }
@@ -30,54 +25,51 @@ class CatCommandTest {
     @Test
     fun `test empty args`() {
         val cat = createCatCommand(emptyList())
-
-        val input = ByteArrayInputStream("Hello ${lineSeparator()} World".toByteArray(charset))
-        val output = ByteArrayOutputStream()
-        val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
-        assertFalse(res.needExit)
-        assertEquals(0, res.exitCode)
-        assertEquals("Hello ${lineSeparator()} World", output.toString(charset))
-        assertEquals(0, error.size())
+        testExecutable(
+            cat,
+            input = "Hello ${lineSeparator()} World",
+            expectedOutput = "Hello ${lineSeparator()} World",
+            expectedError = "",
+            expectedIsZeroExitCode = true,
+            expectedNeedExit = false
+        )
     }
 
     @Test
     fun `test file not exist`() {
         val cat = createCatCommand(listOf("AoAoA"))
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
-        val output = ByteArrayOutputStream()
-        val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
-        assertFalse(res.needExit)
-        assertNotEquals(0, res.exitCode)
-        assertEquals(0, output.size())
-        assertEquals("cat: AoAoA: No such file or directory${lineSeparator()}", error.toString(charset))
+        testExecutable(
+            cat,
+            input = "",
+            expectedOutput = "",
+            expectedError = "cat: AoAoA: No such file or directory${lineSeparator()}",
+            expectedIsZeroExitCode = false,
+            expectedNeedExit = false
+        )
     }
 
     @Test
     fun `test file not exist multiple files`() {
         val cat = createCatCommand(listOf("AoAoA", "src/test/resources/cat.txt"))
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
-        val output = ByteArrayOutputStream()
-        val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
-        assertFalse(res.needExit)
-        assertNotEquals(0, res.exitCode)
-        assertEquals(" Hello${lineSeparator()}", output.toString(charset))
-        assertEquals("cat: AoAoA: No such file or directory${lineSeparator()}", error.toString(charset))
+        testExecutable(
+            cat,
+            input = "",
+            expectedOutput = " Hello${lineSeparator()}",
+            expectedError = "cat: AoAoA: No such file or directory${lineSeparator()}",
+            expectedIsZeroExitCode = false,
+            expectedNeedExit = false
+        )
     }
 
     @Test
     fun `test closed output`() {
         val cat = createCatCommand(listOf("src/test/resources/cat.txt"))
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
+        val file = File.createTempFile("test", null)
+        file.deleteOnExit()
         val output = OutputStream.nullOutputStream()
         output.close()
         val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
+        val res = cat.run(file, output, error)
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals("cat: IO problem: Stream closed${lineSeparator()}", error.toString(HseshCharsets.default))
@@ -86,11 +78,13 @@ class CatCommandTest {
     @Test
     fun `test closed output with input`() {
         val cat = createCatCommand(emptyList())
-        val input = ByteArrayInputStream("Hello${lineSeparator()}".toByteArray(HseshCharsets.default))
+        val file = File.createTempFile("test", null)
+        file.deleteOnExit()
+        file.writeBytes("Hello${lineSeparator()}".toByteArray(HseshCharsets.default))
         val output = OutputStream.nullOutputStream()
         output.close()
         val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
+        val res = cat.run(file, output, error)
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals("cat: IO problem: Stream closed${lineSeparator()}", error.toString(HseshCharsets.default))
@@ -105,47 +99,41 @@ class CatCommandTest {
             return
         }
         val cat = createCatCommand(listOf("src/test/resources/cat.txt", unreadable.path))
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
-        val output = ByteArrayOutputStream()
-        val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
-        assertFalse(res.needExit)
-        assertNotEquals(0, res.exitCode)
-        assertEquals(" Hello${lineSeparator()}", output.toString(charset))
-        assertEquals(
-            "cat: src/test/resources/unreadable.txt: Permission denied${lineSeparator()}",
-            error.toString(charset)
+        testExecutable(
+            cat,
+            input = "",
+            expectedOutput = " Hello${lineSeparator()}",
+            expectedError = "cat: src/test/resources/unreadable.txt: Permission denied${lineSeparator()}",
+            expectedIsZeroExitCode = false,
+            expectedNeedExit = false
         )
     }
 
     @Test
     fun `test not regular file`() {
         val cat = createCatCommand(listOf("src"))
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
-        val output = ByteArrayOutputStream()
-        val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
-        assertFalse(res.needExit)
-        assertNotEquals(0, res.exitCode)
-        assertEquals(0, output.size())
-        assertEquals("cat: src: Is not a regular file${lineSeparator()}", error.toString(charset))
+        testExecutable(
+            cat,
+            input = "",
+            expectedOutput = "",
+            expectedError = "cat: src: Is not a regular file${lineSeparator()}",
+            expectedIsZeroExitCode = false,
+            expectedNeedExit = false
+        )
     }
 
     @ParameterizedTest
     @MethodSource("catData")
     fun `test cat existing files`(args: List<String>, expectedOutput: String) {
-        val cat: Executable = createCatCommand(args)
-        val input = ByteArrayInputStream(ByteArray(0))
-        input.close()
-        val output = ByteArrayOutputStream()
-        val error = ByteArrayOutputStream()
-        val res = cat.run(input, output, error)
-        assertFalse(res.needExit)
-        assertEquals(0, res.exitCode)
-        assertEquals(expectedOutput, output.toString(charset))
-        assertEquals(0, error.size())
+        val cat = createCatCommand(args)
+        testExecutable(
+            cat,
+            input = "",
+            expectedOutput = expectedOutput,
+            expectedError = "",
+            expectedIsZeroExitCode = true,
+            expectedNeedExit = false
+        )
     }
 
     companion object {

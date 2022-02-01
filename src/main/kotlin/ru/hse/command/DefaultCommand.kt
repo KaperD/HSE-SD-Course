@@ -4,21 +4,24 @@ import ru.hse.environment.Environment
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.utils.writeln
+import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import java.io.OutputStream
 
 class DefaultCommand(private var command: List<String>, private val environment: Environment) : Executable {
-    override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
-        val process = startProcess(input, error) ?: return ExecutionResult.fail()
-        return finishProcess(process, input, output, error)
+    override fun run(file: File, output: OutputStream, error: OutputStream): ExecutionResult {
+        val process = startProcess(ProcessBuilder.Redirect.from(file), error) ?: return ExecutionResult.fail()
+        return finishProcess(process, output, error)
     }
 
-    private fun startProcess(input: InputStream, error: OutputStream): Process? {
+    override fun runInheritInput(output: OutputStream, error: OutputStream): ExecutionResult {
+        val process = startProcess(ProcessBuilder.Redirect.INHERIT, error) ?: return ExecutionResult.fail()
+        return finishProcess(process, output, error)
+    }
+
+    private fun startProcess(source: ProcessBuilder.Redirect, error: OutputStream): Process? {
         val processBuilder = ProcessBuilder(command)
-        if (input == System.`in`) {
-            processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
-        }
+        processBuilder.redirectInput(source)
         processBuilder.environment().putAll(environment.getAll())
         return try {
             processBuilder.start()
@@ -30,31 +33,13 @@ class DefaultCommand(private var command: List<String>, private val environment:
 
     private fun finishProcess(
         process: Process,
-        input: InputStream,
         output: OutputStream,
         error: OutputStream
     ): ExecutionResult {
-        if (!writeToProcess(process, input, error) || !readFromProcess(process, output, error)) {
+        if (!readFromProcess(process, output, error)) {
             return ExecutionResult.fail()
         }
         return ExecutionResult(process.exitValue(), false)
-    }
-
-    private fun writeToProcess(process: Process, input: InputStream, error: OutputStream): Boolean {
-        if (input == System.`in`) {
-            return true
-        }
-        return try {
-            input.transferTo(process.outputStream)
-            process.outputStream.close()
-            true
-        } catch (e: IOException) {
-            // Если сообщение "Stream closed" или "Broken pipe" -- это значит, что команда не имеет входных данных
-            if (e.message != "Stream closed" && e.message != "Broken pipe") {
-                error.writeln(e.message)
-            }
-            e.message == "Stream closed"
-        }
     }
 
     private fun readFromProcess(process: Process, output: OutputStream, error: OutputStream): Boolean {
