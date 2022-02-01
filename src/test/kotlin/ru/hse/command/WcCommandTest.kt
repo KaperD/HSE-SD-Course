@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
+import ru.hse.utils.trimIndentCrossPlatform
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.lang.System.lineSeparator
@@ -33,6 +34,19 @@ class WcCommandTest {
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
         assertEquals("1 2 7${lineSeparator()}", output.toString(charset))
+        assertEquals(0, error.size())
+    }
+
+    @Test
+    fun `test empty args empty input`() {
+        val wc = createWcCommand(emptyList())
+        val input = ByteArrayInputStream("".toByteArray(charset))
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = wc.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
+        assertEquals("0 0 0${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -78,15 +92,37 @@ class WcCommandTest {
             ),
             Arguments.of(
                 listOf("wc.txt", "wc2.txt"),
-                "1 2 9 wc.txt${lineSeparator()}3 2 17 wc2.txt${lineSeparator()}"
+                """
+                    1 2 9 wc.txt
+                    3 2 17 wc2.txt
+                    4 4 26 total
+                """.trimIndentCrossPlatform()
             ),
             Arguments.of(
                 listOf("wc2.txt", "wc.txt"),
-                "3 2 17 wc2.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}"
+                """
+                    3 2 17 wc2.txt
+                    1 2 9 wc.txt
+                    4 4 26 total
+                """.trimIndentCrossPlatform()
             ),
             Arguments.of(
                 listOf("wc.txt", "wc.txt", "wc.txt"),
-                "1 2 9 wc.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}"
+                """
+                    1 2 9 wc.txt
+                    1 2 9 wc.txt
+                    1 2 9 wc.txt
+                    3 6 27 total
+                """.trimIndentCrossPlatform()
+            ),
+            Arguments.of(
+                listOf("wc.txt", "AoAoA", "wc.txt"),
+                """
+                    1 2 9 wc.txt
+                    wc: AoAoA: No such file or directory
+                    1 2 9 wc.txt
+                    2 4 18 total
+                """.trimIndentCrossPlatform()
             ),
         )
     }
