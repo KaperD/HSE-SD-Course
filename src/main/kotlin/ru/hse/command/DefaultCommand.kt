@@ -49,8 +49,8 @@ class DefaultCommand(private var command: List<String>, private val environment:
             process.outputStream.close()
             true
         } catch (e: IOException) {
-            // Если сообщение "Stream closed" -- это значит, что команда не имеет входных данных
-            if (e.message != "Stream closed") {
+            // Если сообщение "Stream closed" или "Broken pipe" -- это значит, что команда не имеет входных данных
+            if (e.message != "Stream closed" && e.message != "Broken pipe") {
                 error.writeln(e.message)
             }
             e.message == "Stream closed"
