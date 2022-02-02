@@ -12,7 +12,7 @@ import java.lang.ProcessBuilder.Redirect
 
 class DefaultCommand(private var command: List<String>, private val environment: Environment) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
-        return if (input == System.`in`) {
+        return if (input === System.`in`) {
             runInherit(output, error)
         } else {
             runFromFile(input, output, error)
