@@ -58,7 +58,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("1 1 4${lineSeparator()}", output.toString(charset))
+        assertEquals("       1       1       2${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -73,7 +73,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("1 1 4${lineSeparator()}", output.toString(charset))
+        assertEquals("       1       1       4${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
