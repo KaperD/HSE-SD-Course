@@ -2,10 +2,7 @@ package ru.hse.factory
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
-import ru.hse.command.CatCommand
-import ru.hse.command.EchoCommand
-import ru.hse.command.ExitCommand
-import ru.hse.command.PwdCommand
+import ru.hse.command.*
 import ru.hse.environment.EnvironmentImpl
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -24,7 +21,7 @@ class PipeFactoryTest {
         factory.registerCommand("cat") { CatCommand(it) }
         factory.registerCommand("exit") { ExitCommand() }
         factory.registerCommand("pwd") { PwdCommand(it) }
-//        factory.registerCommand("wc") { WcCommand(it) }
+        factory.registerCommand("wc") { WcCommand(it) }
         return factory
     }
 
@@ -58,7 +55,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("       1       1       2${lineSeparator()}", output.toString(charset))
+        assertEquals("      1       1       2${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -73,7 +70,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("       1       1       4${lineSeparator()}", output.toString(charset))
+        assertEquals("      1       1       4${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
