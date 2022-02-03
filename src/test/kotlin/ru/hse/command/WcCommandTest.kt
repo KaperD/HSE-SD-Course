@@ -10,18 +10,14 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.lang.System.lineSeparator
 import java.nio.charset.Charset
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 
-@Ignore
 class WcCommandTest {
     private val charset: Charset = HseshCharsets.default
 
-    private fun createWcCommand(args: List<String>): Executable {
-        TODO("Return object when it's ready")
-    }
+    private fun createWcCommand(args: List<String>) = WcCommand(args, 1)
 
     @Test
     fun `test empty args`() {
