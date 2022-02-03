@@ -31,7 +31,7 @@ fun run() {
     val pipeParser = PipeParser(tokenizer, pipeSplitter, substitutor)
     val commandFactory = CommandFactoryImpl(environment)
     commandFactory.registerCommand("echo") { EchoCommand(it) }
-    commandFactory.registerCommand("wc") { WcCommand(it, 5) }
+    commandFactory.registerCommand("wc") { WcCommand(it) }
     commandFactory.registerCommand("cat") { CatCommand(it) }
     commandFactory.registerCommand("pwd") { PwdCommand(it) }
     commandFactory.registerCommand("exit") { ExitCommand() }

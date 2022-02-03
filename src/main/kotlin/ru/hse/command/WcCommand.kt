@@ -6,7 +6,6 @@ import ru.hse.executable.ExecutionResult
 import ru.hse.utils.write
 import ru.hse.utils.writeln
 import java.io.*
-import java.lang.IllegalArgumentException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -15,8 +14,9 @@ import java.util.stream.Stream
 import kotlin.collections.ArrayList
 import kotlin.io.path.*
 
+const val DEFAULT_PADDING = 7
 
-class WcCommand(private val args: List<String>, private val padding: Int) : Executable {
+class WcCommand(private val args: List<String>, private val padding: Int = DEFAULT_PADDING) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         val flagParser = FlagParser()
 
@@ -146,10 +146,10 @@ class WcCommand(private val args: List<String>, private val padding: Int) : Exec
         }
     }
 
-    class ByteCountFromStream() :
+    class ByteCountFromStream :
         PrimitivesCount<Byte>(MetricName.Bytes)
 
-    class CharacterCountMetric() :
+    class CharacterCountMetric :
         PrimitivesCount<Int>(MetricName.Characters)
 
     class LineCountMetric(
