@@ -45,7 +45,7 @@ class WcCommand(private val args: List<String>, private val padding: Int) : Exec
         val inputs = if (inputPaths.isEmpty()) {
             listOf(input to null)
         } else {
-            inputPaths.map { path -> path.inputStream() to path.name }
+            inputPaths.map { path -> path.inputStream() to path.toString() }
         }
 
         val anyDefined = Stream.of(flagBytes, flagLines, flagChars, flagWords).anyMatch { it.isDefined() }
@@ -210,7 +210,7 @@ fun MetricResults.formatResults(padding: Int, title: String?): String {
         .stream()
         .map { it.toString().padStart(padding) }
         .collect(Collectors.joining(" "))
-    return title?.let { "$values $it" } ?: values
+    return title?.let { " $values $it" } ?: values
 }
 
 fun evaluateMetric(

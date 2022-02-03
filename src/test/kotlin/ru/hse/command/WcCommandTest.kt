@@ -13,11 +13,12 @@ import java.nio.charset.Charset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.fail
 
 class WcCommandTest {
     private val charset: Charset = HseshCharsets.default
 
-    private fun createWcCommand(args: List<String>) = WcCommand(args, 1)
+    private fun createWcCommand(args: List<String>) = WcCommand(args, 7)
 
     @Test
     fun `test empty args`() {
@@ -28,7 +29,7 @@ class WcCommandTest {
         val res = wc.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("1 2 7${lineSeparator()}", output.toString(charset))
+        assertEquals("      1       2       7${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -56,6 +57,9 @@ class WcCommandTest {
         val error = ByteArrayOutputStream()
         val res = wc.run(input, output, error)
         assertFalse(res.needExit)
+        if (res.exitCode != 0) {
+            fail(error.toString())
+        }
         assertEquals(0, res.exitCode)
         assertEquals(expectedOutput, output.toString(charset))
         assertEquals(0, error.size())
@@ -65,24 +69,24 @@ class WcCommandTest {
         @JvmStatic
         fun wcData() = listOf(
             Arguments.of(
-                listOf("wc.txt"),
-                "1 2 9 wc.txt${lineSeparator()}"
+                listOf("src/test/resources/wc.txt"),
+                "       1       2       9 src/test/resources/wc.txt${lineSeparator()}"
             ),
             Arguments.of(
-                listOf("wc2.txt"),
-                "3 2 17 wc2.txt${lineSeparator()}"
+                listOf("src/test/resources/wc2.txt"),
+                "       3       2      17 src/test/resources/wc2.txt${lineSeparator()}"
             ),
             Arguments.of(
-                listOf("wc.txt", "wc2.txt"),
-                "1 2 9 wc.txt${lineSeparator()}3 2 17 wc2.txt${lineSeparator()}"
+                listOf("src/test/resources/wc.txt", "src/test/resources/wc2.txt"),
+                "       1       2       9 src/test/resources/wc.txt${lineSeparator()}       3       2      17 src/test/resources/wc2.txt${lineSeparator()}       4       4      26 total${lineSeparator()}"
             ),
             Arguments.of(
-                listOf("wc2.txt", "wc.txt"),
-                "3 2 17 wc2.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}"
+                listOf("src/test/resources/wc2.txt", "src/test/resources/wc.txt"),
+                "       3       2      17 src/test/resources/wc2.txt${lineSeparator()}       1       2       9 src/test/resources/wc.txt${lineSeparator()}       4       4      26 total${lineSeparator()}"
             ),
             Arguments.of(
-                listOf("wc.txt", "wc.txt", "wc.txt"),
-                "1 2 9 wc.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}1 2 9 wc.txt${lineSeparator()}"
+                listOf("src/test/resources/wc.txt", "src/test/resources/wc.txt", "src/test/resources/wc.txt"),
+                "       1       2       9 src/test/resources/wc.txt${lineSeparator()}       1       2       9 src/test/resources/wc.txt${lineSeparator()}       1       2       9 src/test/resources/wc.txt${lineSeparator()}       3       6      27 total${lineSeparator()}"
             ),
         )
     }
