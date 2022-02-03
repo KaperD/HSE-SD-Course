@@ -8,6 +8,7 @@ import ru.hse.utils.writeln
 import java.io.*
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
@@ -35,17 +36,26 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
             ?.map { Path(it) }
             ?: emptyList()
 
+        val existingPaths = ArrayList<Path>()
+
         for (path in inputPaths) {
             if (!path.exists()) {
                 error.writeln("wc: $path: No such file or directory")
-                return ExecutionResult.fail()
+            } else {
+                existingPaths.add(path)
             }
         }
 
-        val inputs = if (inputPaths.isEmpty()) {
+        val someDontExist = existingPaths.size != inputPaths.size
+
+        if (existingPaths.isEmpty() && inputPaths.isNotEmpty()) {
+            return ExecutionResult.fail()
+        }
+
+        val inputs = if (existingPaths.isEmpty()) {
             listOf(input to null)
         } else {
-            inputPaths.map { path -> path.inputStream() to path.toString() }
+            existingPaths.map { path -> path.inputStream() to path.toString() }
         }
 
         val anyDefined = Stream.of(flagBytes, flagLines, flagChars, flagWords).anyMatch { it.isDefined() }
@@ -70,7 +80,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
 
         output.write(evaluateMetric({ buildMetrics() }, inputs, padding))
 
-        return ExecutionResult.success()
+        return if (someDontExist) ExecutionResult.fail() else ExecutionResult.success()
     }
 
     interface AllMeasurementsResultsContainer<R> {

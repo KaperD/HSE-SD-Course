@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import ru.hse.utils.trimIndentCrossPlatform
+import ru.hse.utils.trimMarginCrossPlatform
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.lang.System.lineSeparator
@@ -44,7 +45,7 @@ class WcCommandTest {
         val res = wc.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("0 0 0${lineSeparator()}", output.toString(charset))
+        assertEquals("      0       0       0${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -74,11 +75,11 @@ class WcCommandTest {
         assertNotEquals(0, res.exitCode)
         assertEquals(
             """
-                1 2 9 src/test/resources/wc.txt
-                1 2 9 src/test/resources/wc.txt
-                2 4 18 total
+       1       2       9 src/test/resources/wc.txt
+       1       2       9 src/test/resources/wc.txt
+       2       4      18 total
 
-            """.trimIndentCrossPlatform(),
+            """.trimMarginCrossPlatform(),
             output.toString(charset)
         )
         assertEquals("wc: AoAoA: No such file or directory${lineSeparator()}", error.toString(charset))
@@ -103,30 +104,50 @@ class WcCommandTest {
     }
 
     companion object {
-        private const val file1 = "src/test/resources/wc.txt"
-        private const val file2 = "src/test/resources/wc2.txt"
 
         @JvmStatic
         fun wcData() = listOf(
             Arguments.of(
                 listOf("src/test/resources/wc.txt"),
-                "       1       2       9 src/test/resources/wc.txt${lineSeparator()}"
+                """
+       1       2       9 src/test/resources/wc.txt
+
+               """.trimMarginCrossPlatform()
             ),
             Arguments.of(
                 listOf("src/test/resources/wc2.txt"),
-                "       3       2      17 src/test/resources/wc2.txt${lineSeparator()}"
+                """
+       3       2      17 src/test/resources/wc2.txt
+
+                """.trimMarginCrossPlatform()
             ),
             Arguments.of(
                 listOf("src/test/resources/wc.txt", "src/test/resources/wc2.txt"),
-                "       1       2       9 src/test/resources/wc.txt${lineSeparator()}       3       2      17 src/test/resources/wc2.txt${lineSeparator()}       4       4      26 total${lineSeparator()}"
+                """
+       1       2       9 src/test/resources/wc.txt
+       3       2      17 src/test/resources/wc2.txt
+       4       4      26 total
+
+                """.trimMarginCrossPlatform()
             ),
             Arguments.of(
                 listOf("src/test/resources/wc2.txt", "src/test/resources/wc.txt"),
-                "       3       2      17 src/test/resources/wc2.txt${lineSeparator()}       1       2       9 src/test/resources/wc.txt${lineSeparator()}       4       4      26 total${lineSeparator()}"
+                """
+       3       2      17 src/test/resources/wc2.txt
+       1       2       9 src/test/resources/wc.txt
+       4       4      26 total
+
+                """.trimMarginCrossPlatform()
             ),
             Arguments.of(
                 listOf("src/test/resources/wc.txt", "src/test/resources/wc.txt", "src/test/resources/wc.txt"),
-                "       1       2       9 src/test/resources/wc.txt${lineSeparator()}       1       2       9 src/test/resources/wc.txt${lineSeparator()}       1       2       9 src/test/resources/wc.txt${lineSeparator()}       3       6      27 total${lineSeparator()}"
+                """
+       1       2       9 src/test/resources/wc.txt
+       1       2       9 src/test/resources/wc.txt
+       1       2       9 src/test/resources/wc.txt
+       3       6      27 total
+
+                """.trimMarginCrossPlatform()
 
             ),
         )
