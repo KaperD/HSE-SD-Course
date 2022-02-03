@@ -231,21 +231,3 @@ fun evaluateMetric(
     }
     return formattedResultsBuilder.toString()
 }
-
-
-fun main() {
-    val builder = {
-        WcCommand.InputStreamMetricWrapper(
-            listOf(
-                WcCommand.CharacterCountMetric(),
-                WcCommand.LineCountMetric(),
-                WcCommand.WordCountMetric()
-            ),
-            listOf(
-                WcCommand.ByteCountFromStream()
-            ),
-            StandardCharsets.UTF_8
-        )
-    }
-    println(evaluateMetric(builder, listOf(System.`in` to "stdin"), 7))
-}

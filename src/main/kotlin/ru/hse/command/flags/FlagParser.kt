@@ -154,7 +154,6 @@ class FlagParser(
                         args.getOrNull(i + 1) ?: throw parseException("should be followed by a value"),
                         listOf(i, i + 1)
                     )
-
                 }
             }
             throw parseException("not present")
