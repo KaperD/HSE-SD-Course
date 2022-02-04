@@ -31,7 +31,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         input: InputStream,
         output: OutputStream,
         error: OutputStream,
-        metricBuilder: () -> WcCommand.InputStreamMetric
+        metricBuilder: () -> InputStreamMetric
     ): ExecutionResult {
         val success = safeIO(error) {
             val metric = metricBuilder()
@@ -44,7 +44,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
     private fun processNotEmptyArgumentList(
         output: OutputStream,
         error: OutputStream,
-        metricBuilder: () -> WcCommand.InputStreamMetric
+        metricBuilder: () -> InputStreamMetric
     ): ExecutionResult {
         var allSuccessful = true
         val totalResults: MetricResults = TreeMap()
@@ -77,15 +77,15 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         fun allMeasurementsResult(): R
     }
 
-    private interface Metric<I, R, A> : AllMeasurementsResultsContainer<A> {
+    private interface Metric<I, R> {
         fun measure(input: I): R
     }
 
-    private interface InputStreamMetric : Metric<InputStream, MetricResults, Unit> {
-        override fun allMeasurementsResult() {}
-    }
+    private interface InputStreamMetric : Metric<InputStream, MetricResults>
 
-    private interface IterativeMetric<T> : Metric<T, Unit, MetricResults> {
+    private interface IterativeMetric<T> :
+        Metric<T, Unit>,
+        AllMeasurementsResultsContainer<MetricResults> {
         fun name(): MetricName
         fun value(): Long
 
