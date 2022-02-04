@@ -129,7 +129,14 @@ class WcCommandTest {
         val res = cat.run(input, output, error)
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
-        assertEquals("       1       2       $file1BytesSize $file1${lineSeparator()}", output.toString(charset))
+        assertEquals(
+            """
+                |       1       2       $file1BytesSize $file1
+                |       1       2       $file1BytesSize total
+
+            """.trimMarginCrossPlatform(),
+            output.toString(charset)
+        )
         assertEquals(
             "wc: ${unreadable.path}: Permission denied${lineSeparator()}",
             error.toString(charset)

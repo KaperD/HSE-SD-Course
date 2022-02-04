@@ -1,109 +1,98 @@
 package ru.hse.command
 
-import ru.hse.command.flags.FlagParser
+import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
-import ru.hse.utils.write
 import ru.hse.utils.writeln
 import java.io.*
 import java.lang.System.lineSeparator
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.file.Path
 import java.util.*
 import java.util.stream.Collectors
-import java.util.stream.Stream
-import kotlin.collections.ArrayList
-import kotlin.io.path.*
 
 const val DEFAULT_PADDING = 7
 
-class WcCommand(private val args: List<String>, private val padding: Int = DEFAULT_PADDING) : Executable {
+class WcCommand(private val args: List<String>, private val padding: Int = DEFAULT_PADDING) : IOCommand, Executable {
+    override val commandName: String = "wc"
+
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
-        val flagParser = FlagParser()
-
-        val flagBytes = flagParser.addBoolFlag('c')
-        val flagLines = flagParser.addBoolFlag('l')
-        val flagChars = flagParser.addBoolFlag('m')
-        val flagWords = flagParser.addBoolFlag('w')
-
-        val fileArgs = flagParser.addNonRecognized("input files", 0..Int.MAX_VALUE)
-
-        flagParser.parseArgs(args)
-
-        val charset = StandardCharsets.UTF_8
-
-        val inputPaths = fileArgs.valueCast<List<String>>()
-            ?.map { Path(it) }
-            ?: emptyList()
-
-        val existingPaths = ArrayList<Path>()
-
-        for (path in inputPaths) {
-            if (!path.exists()) {
-                error.writeln("wc: $path: No such file or directory")
-            } else {
-                existingPaths.add(path)
-            }
-        }
-
-        val someDontExist = existingPaths.size != inputPaths.size
-
-        if (existingPaths.isEmpty() && inputPaths.isNotEmpty()) {
-            return ExecutionResult.fail()
-        }
-
-        val inputs = if (existingPaths.isEmpty()) {
-            listOf(input to null)
-        } else {
-            existingPaths.map { path -> path.inputStream() to path.toString() }
-        }
-
-        val anyDefined = Stream.of(flagBytes, flagLines, flagChars, flagWords).anyMatch { it.isDefined() }
-
-        if (!anyDefined) {
-            flagBytes.setDefault()
-            flagLines.setDefault()
-            flagWords.setDefault()
-        }
-
         fun buildMetrics(): InputStreamMetric {
-            val charMetrics = ArrayList<IterativeMetric<Int>>()
-            val byteMetrics = ArrayList<IterativeMetric<Byte>>()
+            val charMetrics = listOf(LineCountMetric(), WordCountMetric())
+            val byteMetrics = listOf(ByteCountFromStream())
 
-            if (flagBytes.isDefined()) byteMetrics.add(ByteCountFromStream())
-            if (flagLines.isDefined()) charMetrics.add(LineCountMetric())
-            if (flagChars.isDefined()) charMetrics.add(CharacterCountMetric())
-            if (flagWords.isDefined()) charMetrics.add(WordCountMetric())
-
-            return InputStreamMetricWrapper(charMetrics, byteMetrics, charset)
+            return InputStreamMetricWrapper(charMetrics, byteMetrics)
         }
-
-        output.write(evaluateMetric({ buildMetrics() }, inputs, padding))
-
-        return if (someDontExist) ExecutionResult.fail() else ExecutionResult.success()
+        return when {
+            args.isEmpty() -> processEmptyArgumentList(input, output, error) { buildMetrics() }
+            else -> processNotEmptyArgumentList(output, error) { buildMetrics() }
+        }
     }
 
-    interface AllMeasurementsResultsContainer<R> {
+    private fun processEmptyArgumentList(
+        input: InputStream,
+        output: OutputStream,
+        error: OutputStream,
+        metricBuilder: () -> WcCommand.InputStreamMetric
+    ): ExecutionResult {
+        val success = safeIO(error) {
+            val metric = metricBuilder()
+            val result = metric.measure(input)
+            output.writeln(result.formatResults(null))
+        }
+        return if (success) ExecutionResult.success() else ExecutionResult.fail()
+    }
+
+    private fun processNotEmptyArgumentList(
+        output: OutputStream,
+        error: OutputStream,
+        metricBuilder: () -> WcCommand.InputStreamMetric
+    ): ExecutionResult {
+        var allSuccessful = true
+        val totalResults: MetricResults = TreeMap()
+        for (fileName in args) {
+            val success = readFile(fileName, error) {
+                val metric = metricBuilder()
+                val inputResults: MetricResults = metric.measure(it)
+                totalResults.joinResults(inputResults)
+                output.writeln(inputResults.formatResults(fileName))
+            }
+            if (!success) {
+                allSuccessful = false
+            }
+        }
+        if (args.size > 1) {
+            output.writeln(totalResults.formatResults("total"))
+        }
+        return if (allSuccessful) ExecutionResult.success() else ExecutionResult.fail()
+    }
+
+    private fun MetricResults.formatResults(title: String?): String {
+        val values = this.values
+            .stream()
+            .map { it.toString().padStart(padding) }
+            .collect(Collectors.joining(" "))
+        return title?.let { " $values $it" } ?: values
+    }
+
+    private interface AllMeasurementsResultsContainer<R> {
         fun allMeasurementsResult(): R
     }
 
-    interface Metric<I, R, A> : AllMeasurementsResultsContainer<A> {
+    private interface Metric<I, R, A> : AllMeasurementsResultsContainer<A> {
         fun measure(input: I): R
     }
 
-    interface InputStreamMetric : Metric<InputStream, MetricResults, Unit> {
+    private interface InputStreamMetric : Metric<InputStream, MetricResults, Unit> {
         override fun allMeasurementsResult() {}
     }
 
-    interface IterativeMetric<T> : Metric<T, Unit, MetricResults> {
+    private interface IterativeMetric<T> : Metric<T, Unit, MetricResults> {
         fun name(): MetricName
         fun value(): Long
 
         override fun allMeasurementsResult() = sortedMapOf(name() to value())
     }
 
-    open class PrimitivesCount<T>(
+    private open class PrimitivesCount<T>(
         private var name: MetricName,
         private var count: Long = 0
     ) :
@@ -116,13 +105,13 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         override fun value() = count
     }
 
-    class ByteProcessingInputStream(
-        private val wrappedStream: InputStream,
+    private class ByteProcessingInputStream(
+        wrappedStream: InputStream,
         private val byteConsumer: (Byte) -> Unit,
         private val finisher: () -> Unit
-    ) : InputStream() {
+    ) : FilterInputStream(wrappedStream) {
         override fun read(): Int {
-            val b = wrappedStream.read()
+            val b = super.read()
             if (b == -1) {
                 finisher()
                 return b
@@ -130,12 +119,23 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
             byteConsumer(b.toByte())
             return b
         }
+
+        override fun read(b: ByteArray, off: Int, len: Int): Int {
+            val res = super.read(b, off, len)
+            if (res == -1) {
+                finisher()
+                return res
+            }
+            for (i in off until off + res) {
+                byteConsumer(b[i])
+            }
+            return res
+        }
     }
 
-    class InputStreamMetricWrapper(
+    private class InputStreamMetricWrapper(
         private val characterMetrics: List<IterativeMetric<Int>>,
         private val byteMetrics: List<IterativeMetric<Byte>>,
-        private val charset: Charset
     ) : InputStreamMetric {
         override fun measure(input: InputStream): MetricResults {
             val bufferedIS = BufferedInputStream(input)
@@ -144,7 +144,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
                 { byte -> byteMetrics.forEach { it.measure(byte) } },
                 {}
             )
-            val charReaderIR = InputStreamReader(byteProcessingIS, charset)
+            val charReaderIR = InputStreamReader(byteProcessingIS, HseshCharsets.default)
             var ch: Int = charReaderIR.read()
             while (ch != -1) {
                 characterMetrics.forEach { it.measure(ch) }
@@ -157,13 +157,10 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         }
     }
 
-    class ByteCountFromStream :
+    private class ByteCountFromStream :
         PrimitivesCount<Byte>(MetricName.Bytes)
 
-    class CharacterCountMetric :
-        PrimitivesCount<Int>(MetricName.Characters)
-
-    class LineCountMetric(
+    private class LineCountMetric(
         private var lineCount: Long = 0,
         private var prevCharacter: Int? = null
     ) : IterativeMetric<Int> {
@@ -182,7 +179,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         override fun value() = lineCount
     }
 
-    class WordCountMetric(
+    private class WordCountMetric(
         private var wordCount: Long = 0,
         private var wasOnWhitespace: Boolean = true,
     ) : IterativeMetric<Int> {
@@ -200,49 +197,17 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
     }
 }
 
-enum class MetricName {
+private enum class MetricName {
     Lines,
     Words,
     Bytes,
-    Characters,
 }
 
-typealias MetricResults = SortedMap<MetricName, Long>
+private typealias MetricResults = SortedMap<MetricName, Long>
 
-fun MetricResults.joinResults(others: MetricResults) {
+private fun MetricResults.joinResults(others: MetricResults) {
     for ((otherK, otherV) in others) {
         val curV = this.getOrDefault(otherK, 0)
         this[otherK] = curV + otherV
     }
-}
-
-fun MetricResults.formatResults(padding: Int, title: String?): String {
-    val values = this.values
-        .stream()
-        .map { it.toString().padStart(padding) }
-        .collect(Collectors.joining(" "))
-    return title?.let { " $values $it" } ?: values
-}
-
-fun evaluateMetric(
-    metricBuilder: () -> WcCommand.InputStreamMetric,
-    inputs: List<Pair<InputStream, String?>>,
-    padding: Int,
-): String {
-    val totalResults: MetricResults = TreeMap()
-    val formattedResultsBuilder = StringBuilder()
-    for ((input, inputName) in inputs) {
-        val metric = metricBuilder()
-        val inputResults: MetricResults = metric.measure(input)
-        totalResults.joinResults(inputResults)
-        formattedResultsBuilder
-            .append(inputResults.formatResults(padding, inputName))
-            .append(lineSeparator())
-    }
-    if (inputs.size > 1) {
-        formattedResultsBuilder
-            .append(totalResults.formatResults(padding, "total"))
-            .append(lineSeparator())
-    }
-    return formattedResultsBuilder.toString()
 }
