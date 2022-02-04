@@ -6,6 +6,7 @@ import ru.hse.executable.ExecutionResult
 import ru.hse.utils.write
 import ru.hse.utils.writeln
 import java.io.*
+import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
@@ -170,7 +171,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
             val charsBuffer = StringBuilder()
             prevCharacter?.let { charsBuffer.appendCodePoint(it) }
             charsBuffer.appendCodePoint(input)
-            if (charsBuffer.toString().endsWith(System.lineSeparator())) {
+            if (charsBuffer.toString().endsWith(lineSeparator())) {
                 lineCount += 1
             }
             prevCharacter = input
@@ -234,10 +235,14 @@ fun evaluateMetric(
         val metric = metricBuilder()
         val inputResults: MetricResults = metric.measure(input)
         totalResults.joinResults(inputResults)
-        formattedResultsBuilder.appendLine(inputResults.formatResults(padding, inputName))
+        formattedResultsBuilder
+            .append(inputResults.formatResults(padding, inputName))
+            .append(lineSeparator())
     }
     if (inputs.size > 1) {
-        formattedResultsBuilder.appendLine(totalResults.formatResults(padding, "total"))
+        formattedResultsBuilder
+            .append(totalResults.formatResults(padding, "total"))
+            .append(lineSeparator())
     }
     return formattedResultsBuilder.toString()
 }
