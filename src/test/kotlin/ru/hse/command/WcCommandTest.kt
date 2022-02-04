@@ -10,6 +10,7 @@ import ru.hse.utils.trimMarginCrossPlatform
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.OutputStream
 import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.assertEquals
@@ -83,6 +84,70 @@ class WcCommandTest {
             output.toString(charset)
         )
         assertEquals("wc: AoAoA: No such file or directory${lineSeparator()}", error.toString(charset))
+    }
+
+    @Test
+    fun `test closed output`() {
+        val cat = createWcCommand(listOf(file1))
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = OutputStream.nullOutputStream()
+        output.close()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals("wc: IO problem: Stream closed${lineSeparator()}", error.toString(HseshCharsets.default))
+    }
+
+    @Test
+    fun `test closed output with input`() {
+        val cat = createWcCommand(emptyList())
+        val input = ByteArrayInputStream("Hello${lineSeparator()}".toByteArray(HseshCharsets.default))
+        val output = OutputStream.nullOutputStream()
+        output.close()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals("wc: IO problem: Stream closed${lineSeparator()}", error.toString(HseshCharsets.default))
+    }
+
+    @Test
+    fun `test unreadable file`() {
+        val unreadable = File("src/test/resources/unreadable1.txt")
+        unreadable.createNewFile()
+        unreadable.deleteOnExit()
+        if (!unreadable.setReadable(false)) {
+            return
+        }
+        val cat = createWcCommand(listOf(file1, unreadable.path))
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals("       1       2       $file1BytesSize $file1${lineSeparator()}", output.toString(charset))
+        assertEquals(
+            "wc: ${unreadable.path}: Permission denied${lineSeparator()}",
+            error.toString(charset)
+        )
+    }
+
+    @Test
+    fun `test not regular file`() {
+        val cat = createWcCommand(listOf("src"))
+        val input = ByteArrayInputStream(ByteArray(0))
+        input.close()
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = cat.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertEquals("wc: src: Is not a regular file${lineSeparator()}", error.toString(charset))
     }
 
     @ParameterizedTest
