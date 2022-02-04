@@ -162,21 +162,26 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
 
     private class LineCountMetric(
         private var lineCount: Long = 0,
-        private var prevCharacter: Int? = null
     ) : IterativeMetric<Int> {
+        private val whitespaceCharsArray = lineSeparator().toCharArray()
+        private val buffer = CharArray(whitespaceCharsArray.size)
+
         override fun measure(input: Int) {
-            val charsBuffer = StringBuilder()
-            prevCharacter?.let { charsBuffer.appendCodePoint(it) }
-            charsBuffer.appendCodePoint(input)
-            if (charsBuffer.toString().endsWith(lineSeparator())) {
+            for (i in 0 until buffer.size - 1) {
+                buffer[i] = buffer[i + 1]
+            }
+            buffer[buffer.lastIndex] = input.toChar()
+            if (isNewLine()) {
                 lineCount += 1
             }
-            prevCharacter = input
         }
 
         override fun name() = MetricName.Lines
-
         override fun value() = lineCount
+
+        private fun isNewLine(): Boolean {
+            return whitespaceCharsArray.contentEquals(buffer)
+        }
     }
 
     private class WordCountMetric(
