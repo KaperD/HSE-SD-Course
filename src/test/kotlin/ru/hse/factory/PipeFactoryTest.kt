@@ -46,6 +46,7 @@ class PipeFactoryTest {
     @Test
     fun `test correct not exit pipe multiple commands`() {
         val echo = commandFactory.create(listOf("echo", "3"))
+        val echoOutputSize = "3${lineSeparator()}".toByteArray(HseshCharsets.default).size
         val wc = commandFactory.create(listOf("wc"))
         val pipe = pipeFactory.create(listOf(echo, wc))
         val input = ByteArrayInputStream(ByteArray(0))
@@ -55,7 +56,7 @@ class PipeFactoryTest {
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("      1       1       2${lineSeparator()}", output.toString(charset))
+        assertEquals("      1       1       $echoOutputSize${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -64,13 +65,14 @@ class PipeFactoryTest {
         val wc = commandFactory.create(listOf("wc"))
         val cat = commandFactory.create(listOf("cat"))
         val pipe = pipeFactory.create(listOf(wc, cat))
-        val input = ByteArrayInputStream("123${lineSeparator()}".toByteArray(charset))
+        val inputBytes = "123${lineSeparator()}".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val res = pipe.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals("      1       1       4${lineSeparator()}", output.toString(charset))
+        assertEquals("      1       1       ${inputBytes.size}${lineSeparator()}", output.toString(charset))
         assertEquals(0, error.size())
     }
 
