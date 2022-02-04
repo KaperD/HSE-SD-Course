@@ -8,6 +8,6 @@ interface CLI {
     val outputStream: OutputStream
     val errorStream: OutputStream
 
-    fun getLine(): String
+    fun getLine(): String?
     fun showMessage(message: String)
 }

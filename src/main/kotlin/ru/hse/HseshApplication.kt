@@ -9,19 +9,23 @@ class HseshApplication(
 ) {
     fun run() {
         while (true) {
-            val line = cli.getLine()
-            if (line.isBlank()) {
-                continue
-            }
-            val executionResult = expressionExecutor.execute(
-                line,
-                cli.inputStream,
-                cli.outputStream,
-                cli.errorStream
-            )
-            if (executionResult.needExit) {
+            val line = cli.getLine() ?: return
+            if (runExpression(line)) {
                 return
             }
         }
+    }
+
+    private fun runExpression(expression: String): Boolean {
+        if (expression.isBlank()) {
+            return false
+        }
+        val executionResult = expressionExecutor.execute(
+            expression,
+            cli.inputStream,
+            cli.outputStream,
+            cli.errorStream
+        )
+        return executionResult.needExit
     }
 }

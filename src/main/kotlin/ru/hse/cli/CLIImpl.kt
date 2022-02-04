@@ -14,9 +14,9 @@ class CLIImpl(
 ) : CLI {
     private val reader = BufferedReader(inputStream.reader(HseshCharsets.default))
 
-    override fun getLine(): String {
+    override fun getLine(): String? {
         outputStream.write("> ")
-        return reader.readLine() ?: ""
+        return reader.readLine()
     }
 
     override fun showMessage(message: String) {
