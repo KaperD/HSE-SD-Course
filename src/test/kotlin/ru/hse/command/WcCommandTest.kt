@@ -173,9 +173,9 @@ class WcCommandTest {
     }
 
     companion object {
-        val file1: String = File("src/test/resources/wc.txt").path
+        const val file1: String = "src/test/resources/wc.txt"
         val file1BytesSize = File(file1).readBytes().size
-        private val file2 = File("src/test/resources/wc2.txt").path
+        private const val file2 = "src/test/resources/wc2.txt"
         private val file2BytesSize = File(file2).readBytes().size
 
         @JvmStatic
