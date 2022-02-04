@@ -41,7 +41,7 @@ class CLITest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val cli = createCLI(input, output, error)
-        assertEquals(listOf("", "", ""), listOf(cli.getLine(), cli.getLine(), cli.getLine()))
+        assertEquals(listOf("", "", null), listOf(cli.getLine(), cli.getLine(), cli.getLine()))
         assertEquals("> > > ", output.toString(charset))
     }
 
