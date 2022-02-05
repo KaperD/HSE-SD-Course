@@ -36,9 +36,9 @@ Hello, world!
 > cat $FILE
 Some example text
 > cat example.txt | wc
-1 3 18
+      1       3      18
 > echo 123 | wc
-1 1 4
+      1       1       4
 > pwd
 /Users/user1/
 > x=ex
@@ -97,7 +97,7 @@ hsesh supports pipes of commands. Commands in pipe are executed sequentially, st
 Example:
 ```shell
 > echo 123 | wc
-1 1 4
+      1       1       4
 > echo 123 | pwd | echo 3
 3
 > echo 123 | pwd 3 | exit
