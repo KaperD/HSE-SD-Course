@@ -142,17 +142,16 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         private val byteMetrics: List<IterativeMetric<Byte>>,
     ) : InputStreamMetric {
         override fun measure(input: InputStream): MetricResults {
-            val bufferedIS = BufferedInputStream(input)
             val byteProcessingIS = ByteProcessingInputStream(
-                bufferedIS,
+                input,
                 { byte -> byteMetrics.forEach { it.measure(byte) } },
                 {}
             )
-            val charReaderIR = InputStreamReader(byteProcessingIS, HseshCharsets.default)
-            var ch: Int = charReaderIR.read()
+            val charReader = byteProcessingIS.bufferedReader(HseshCharsets.default)
+            var ch: Int = charReader.read()
             while (ch != -1) {
                 characterMetrics.forEach { it.measure(ch) }
-                ch = charReaderIR.read()
+                ch = charReader.read()
             }
             val allResults: MetricResults = TreeMap()
             characterMetrics.forEach { m -> allResults.joinResults(m.allMeasurementsResult()) }
