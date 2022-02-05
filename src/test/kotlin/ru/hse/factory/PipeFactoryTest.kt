@@ -1,11 +1,13 @@
 package ru.hse.factory
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import ru.hse.charset.HseshCharsets
 import ru.hse.command.*
 import ru.hse.environment.EnvironmentImpl
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.lang.IllegalArgumentException
 import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.*
@@ -158,5 +160,12 @@ class PipeFactoryTest {
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
         assertEquals("pwd: too many arguments${lineSeparator()}", error.toString(charset))
+    }
+
+    @Test
+    fun `test creating pipe with empty commands`() {
+        assertThrows<IllegalArgumentException> {
+            pipeFactory.create(emptyList())
+        }
     }
 }

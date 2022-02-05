@@ -11,15 +11,19 @@ import java.io.OutputStream
  * Пайп, в котором данные между командами передаются через оперативную память
  */
 class InMemoryPipe(private val commands: List<Executable>) : Executable {
+    init {
+        if (commands.isEmpty()) {
+            throw IllegalArgumentException("Commands for pipe should not be empty")
+        }
+    }
+
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         var currentInput: InputStream = input
         val inMemoryOutput = ByteArrayOutputStream()
-        for ((i, command) in commands.withIndex()) {
-            val isLastCommand = i == commands.lastIndex
-            val currentOutput = if (isLastCommand) output else inMemoryOutput
-            val res = command.run(currentInput, currentOutput, error)
-            if (res.exitCode != 0 || res.needExit || isLastCommand) {
-                if (res.needExit && !isLastCommand) {
+        for (command in commands.dropLast(1)) {
+            val res = command.run(currentInput, inMemoryOutput, error)
+            if (res.exitCode != 0 || res.needExit) {
+                if (res.needExit) {
                     output.write(inMemoryOutput.toByteArray())
                 }
                 return res
@@ -27,6 +31,6 @@ class InMemoryPipe(private val commands: List<Executable>) : Executable {
             currentInput = ByteArrayInputStream(inMemoryOutput.toByteArray())
             inMemoryOutput.reset()
         }
-        throw IllegalStateException("Should not reach here")
+        return commands.last().run(currentInput, output, error)
     }
 }

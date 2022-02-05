@@ -213,6 +213,11 @@ class HseshApplicationTest {
 
                 """.trimIndentCrossPlatform()
             ),
+            Arguments.of(
+                "echo 3",
+                "> 3${System.lineSeparator()}> ",
+                ""
+            ),
         )
     }
 }
