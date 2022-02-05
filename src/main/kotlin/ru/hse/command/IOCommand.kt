@@ -17,7 +17,11 @@ interface IOCommand {
     val commandName: String
 
     /**
-     * Безопасно прочитать файл. Выводит ошибку в error, если она случилась во время чтения
+     * Безопасно выполнить действие block над открытым для чтения файла.
+     * Выводит ошибку в error, если она случилась во время чтения
+     * @param fileName путь до файла
+     * @param error поток для вывода ошибок
+     * @param block действие над открытым для чтения файлом
      * @return true, если чтение завершилось без ошибок
      */
     fun readFile(fileName: String, error: OutputStream, block: (InputStream) -> Unit): Boolean {
@@ -45,6 +49,8 @@ interface IOCommand {
     /**
      * Безопасно выполнить IO действия
      * Если во время исполнения произошло IOException, ошибка будет выведена в error
+     * @param error поток для вывода ошибок
+     * @param block IO действие
      * @return true, если выполнение завершилось без ошибок
      */
     fun safeIO(error: OutputStream, block: () -> Unit): Boolean {

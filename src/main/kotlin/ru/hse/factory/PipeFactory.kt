@@ -8,6 +8,8 @@ import ru.hse.executable.Executable
 interface PipeFactory {
     /**
      *  Создать пайп из списка команд
+     *  @param commands команды входящие в пайп
+     *  @return созданный пайп
      */
     fun create(commands: List<Executable>): Executable
 }

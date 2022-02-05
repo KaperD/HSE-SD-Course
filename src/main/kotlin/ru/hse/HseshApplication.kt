@@ -10,6 +10,9 @@ class HseshApplication(
     private val cli: CLI,
     private val expressionExecutor: ExpressionExecutor
 ) {
+    /**
+     * Запускает основной цикл приложения
+     */
     fun run() {
         while (true) {
             val line = cli.getLine() ?: return

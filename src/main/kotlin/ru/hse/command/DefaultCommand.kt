@@ -11,7 +11,7 @@ import java.io.OutputStream
 import java.lang.ProcessBuilder.Redirect
 
 /**
- * Запускает другой процесс
+ * Отвечает за исполнение команд, неизвестных Hsesh, путём запуска другого процесса
  */
 class DefaultCommand(private var command: List<String>, private val environment: Environment) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
