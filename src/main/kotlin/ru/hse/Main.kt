@@ -5,6 +5,7 @@ import ru.hse.command.CatCommand
 import ru.hse.command.EchoCommand
 import ru.hse.command.ExitCommand
 import ru.hse.command.PwdCommand
+import ru.hse.command.WcCommand
 import ru.hse.environment.EnvironmentImpl
 import ru.hse.executor.ExpressionExecutorImpl
 import ru.hse.factory.CommandFactoryImpl
@@ -30,7 +31,7 @@ fun run() {
     val pipeParser = PipeParser(tokenizer, pipeSplitter, substitutor)
     val commandFactory = CommandFactoryImpl(environment)
     commandFactory.registerCommand("echo") { EchoCommand(it) }
-//    commandFactory.registerCommand("wc") { WcCommand(it) }
+    commandFactory.registerCommand("wc") { WcCommand(it) }
     commandFactory.registerCommand("cat") { CatCommand(it) }
     commandFactory.registerCommand("pwd") { PwdCommand(it) }
     commandFactory.registerCommand("exit") { ExitCommand() }
