@@ -3,6 +3,9 @@ package ru.hse
 import ru.hse.cli.CLI
 import ru.hse.executor.ExpressionExecutor
 
+/**
+ * Отвечает за считывание выражений и их исполнение
+ */
 class HseshApplication(
     private val cli: CLI,
     private val expressionExecutor: ExpressionExecutor

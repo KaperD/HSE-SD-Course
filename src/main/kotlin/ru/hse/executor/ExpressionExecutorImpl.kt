@@ -12,6 +12,11 @@ import ru.hse.utils.writeln
 import java.io.InputStream
 import java.io.OutputStream
 
+/**
+ * Сначала проверяет, является ли выражение присваиванием. Если да, то записывает значение переменной
+ * Если это не присваивание, то проверяет пайп ли это. Если да, то исполняет его
+ * Если это не присваивание и не пайп, то возвращает ошибку
+ */
 class ExpressionExecutorImpl(
     private val assignmentParser: AssignmentParser,
     private val pipeParser: PipeParser,
@@ -30,7 +35,7 @@ class ExpressionExecutorImpl(
             val key = resultAssignmentParser.getOrThrow().first
             val value = resultAssignmentParser.getOrThrow().second
             environment.set(key, value)
-            return success()
+            return success
         }
 
         val resultPipeParser = pipeParser.parse(expression)
@@ -42,7 +47,7 @@ class ExpressionExecutorImpl(
             }
             else -> {
                 error.writeln(resultPipeParser.exceptionOrNull()?.message)
-                fail()
+                fail
             }
         }
     }

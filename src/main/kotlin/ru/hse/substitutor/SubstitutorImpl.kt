@@ -1,8 +1,12 @@
 package ru.hse.substitutor
 
-import ru.hse.validator.VarNameValidator
 import ru.hse.environment.Environment
+import ru.hse.validator.VarNameValidator
 
+/**
+ * Заменяет $varname на значение varname, если для $varname внешние кавычки двойные или их нет
+ * Также убирает внешние кавычки
+ */
 class SubstitutorImpl(
     private val environment: Environment,
     private val varNameValidator: VarNameValidator

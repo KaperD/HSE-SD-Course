@@ -1,5 +1,8 @@
 package ru.hse.environment
 
+/**
+ * Если переменная не нашлась, то перенаправляет запрос к родителю (если он есть)
+ */
 class EnvironmentImpl(
     private val parentEnv: Environment?,
     startVariables: Map<String, String> = emptyMap()

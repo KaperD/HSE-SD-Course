@@ -6,6 +6,11 @@ import ru.hse.executable.Executable
 import java.lang.IllegalArgumentException
 import java.util.function.Function
 
+/**
+ * Название команды — первый из переданных токенов
+ * Если название команды зарегистрировано, то возвращает зарегистрированную реализацию
+ * Иначе возвращает сущность, которая запустит другой процесс с переданным названием
+ */
 class CommandFactoryImpl(private val environment: Environment) : CommandFactory {
     private val commands = hashMapOf<String, Function<List<String>, Executable>>()
 

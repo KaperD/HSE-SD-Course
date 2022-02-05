@@ -10,6 +10,9 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.lang.ProcessBuilder.Redirect
 
+/**
+ * Запускает другой процесс
+ */
 class DefaultCommand(private var command: List<String>, private val environment: Environment) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         return if (input === System.`in`) {
@@ -20,7 +23,7 @@ class DefaultCommand(private var command: List<String>, private val environment:
     }
 
     private fun runInherit(output: OutputStream, error: OutputStream): ExecutionResult {
-        val process = startProcess(Redirect.INHERIT, error) ?: return ExecutionResult.fail()
+        val process = startProcess(Redirect.INHERIT, error) ?: return ExecutionResult.fail
         return finishProcess(process, output, error)
     }
 
@@ -30,11 +33,11 @@ class DefaultCommand(private var command: List<String>, private val environment:
             file.outputStream().buffered().use {
                 input.transferTo(it)
             }
-            val process = startProcess(Redirect.from(file), error) ?: return ExecutionResult.fail()
+            val process = startProcess(Redirect.from(file), error) ?: return ExecutionResult.fail
             finishProcess(process, output, error)
         } catch (e: IOException) {
             error.writeln(e.message)
-            ExecutionResult.fail()
+            ExecutionResult.fail
         } finally {
             file.delete()
         }
@@ -58,7 +61,7 @@ class DefaultCommand(private var command: List<String>, private val environment:
         error: OutputStream
     ): ExecutionResult {
         if (!readFromProcess(process, output, error)) {
-            return ExecutionResult.fail()
+            return ExecutionResult.fail
         }
         return ExecutionResult(process.exitValue(), false)
     }

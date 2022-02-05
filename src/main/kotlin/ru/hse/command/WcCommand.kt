@@ -11,6 +11,10 @@ import java.util.stream.Collectors
 
 const val DEFAULT_PADDING = 7
 
+/**
+ * wc [file ...] — считает число переводов строки, слов и байт в файлах и выводит это в поток вывода
+ * Если список файлов пуст, то считает эти же метрики в потоке ввода
+ */
 class WcCommand(private val args: List<String>, private val padding: Int = DEFAULT_PADDING) : IOCommand, Executable {
     override val commandName: String = "wc"
 
@@ -38,7 +42,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
             val result = metric.measure(input)
             output.writeln(result.formatResults(null))
         }
-        return if (success) ExecutionResult.success() else ExecutionResult.fail()
+        return if (success) ExecutionResult.success else ExecutionResult.fail
     }
 
     private fun processNotEmptyArgumentList(
@@ -62,7 +66,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         if (args.size > 1) {
             output.writeln(totalResults.formatResults("total"))
         }
-        return if (allSuccessful) ExecutionResult.success() else ExecutionResult.fail()
+        return if (allSuccessful) ExecutionResult.success else ExecutionResult.fail
     }
 
     private fun MetricResults.formatResults(title: String?): String {

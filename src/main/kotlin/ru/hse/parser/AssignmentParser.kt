@@ -5,11 +5,18 @@ import ru.hse.tokenizer.Tokenizer
 import ru.hse.utils.failure
 import ru.hse.validator.VarNameValidator
 
+/**
+ * Отвечает за парсинг присваиваний
+ */
 class AssignmentParser(
     private val varNameValidator: VarNameValidator,
     private val tokenizer: Tokenizer,
     private val substitutor: Substitutor
 ) : Parser<Pair<String, String>> {
+    /**
+     * Проверяет, является ли выражение присваиванием
+     * Если является, то возвращает готовые к использованию название и значение переменной
+     */
     override fun parse(line: String): Result<Pair<String, String>> {
         val trimmedLine = line.trim()
 

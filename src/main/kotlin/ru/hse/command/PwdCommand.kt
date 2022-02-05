@@ -7,13 +7,16 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Paths
 
+/**
+ * pwd — выводит текущую директорию в поток вывода
+ */
 class PwdCommand(private val args: List<String>) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         if (args.isNotEmpty()) {
             error.writeln("pwd: too many arguments")
-            return ExecutionResult.fail()
+            return ExecutionResult.fail
         }
         output.writeln(Paths.get("").toAbsolutePath().toString())
-        return ExecutionResult.success()
+        return ExecutionResult.success
     }
 }

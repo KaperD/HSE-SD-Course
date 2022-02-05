@@ -4,11 +4,18 @@ import ru.hse.splitter.PipeSplitter
 import ru.hse.substitutor.Substitutor
 import ru.hse.tokenizer.Tokenizer
 
+/**
+ * Отвечает за парсинг пайпов
+ */
 class PipeParser(
     private val tokenizer: Tokenizer,
     private val pipeSplitter: PipeSplitter,
     private val substitutor: Substitutor
 ) : Parser<List<List<String>>> {
+    /**
+     * Проверяет, является ли выражение пайпом
+     * Если является, то возвращает список команд (команды в виде списка токенов готовых к использованию)
+     */
     override fun parse(line: String): Result<List<List<String>>> {
         return substitute(split(tokenize(line)))
     }

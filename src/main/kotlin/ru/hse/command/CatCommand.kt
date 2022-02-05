@@ -4,6 +4,10 @@ import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import java.io.*
 
+/**
+ * cat [file ...] — конкатенирует содержимое файлов и выводит его в поток вывода
+ * Если список файлов пуст, то переводит весь поток ввода в поток вывода
+ */
 class CatCommand(private val arguments: List<String>) : IOCommand, Executable {
     override val commandName: String = "cat"
 
@@ -20,9 +24,9 @@ class CatCommand(private val arguments: List<String>) : IOCommand, Executable {
         error: OutputStream
     ): ExecutionResult {
         return if (safeIO(error) { input.transferTo(output) }) {
-            ExecutionResult.success()
+            ExecutionResult.success
         } else {
-            ExecutionResult.fail()
+            ExecutionResult.fail
         }
     }
 
@@ -36,6 +40,6 @@ class CatCommand(private val arguments: List<String>) : IOCommand, Executable {
                 isSuccessful = false
             }
         }
-        return if (isSuccessful) ExecutionResult.success() else ExecutionResult.fail()
+        return if (isSuccessful) ExecutionResult.success else ExecutionResult.fail
     }
 }
