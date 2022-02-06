@@ -1,8 +1,6 @@
 package ru.hse.command
 
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
@@ -12,12 +10,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ExitCommandTest {
-    private fun createExitCommand(@Suppress("unused") args: List<String>): Executable = ExitCommand()
+    private fun createExitCommand(): Executable = ExitCommand()
 
-    @ParameterizedTest
-    @MethodSource("exitData")
-    fun `test exit`(args: List<String>) {
-        val exit: Executable = createExitCommand(args)
+    @Test
+    fun `test exit`() {
+        val exit: Executable = createExitCommand()
         val input = ByteArrayInputStream(ByteArray(0))
         input.close()
         val output = ByteArrayOutputStream()
@@ -27,14 +24,5 @@ class ExitCommandTest {
         assertEquals(0, res.exitCode)
         assertEquals("Bye${lineSeparator()}", output.toString(HseshCharsets.default))
         assertEquals(0, error.size())
-    }
-
-    companion object {
-        @JvmStatic
-        fun exitData() = listOf(
-            Arguments.of(listOf<String>()),
-            Arguments.of(listOf("")),
-            Arguments.of(listOf("Hello", "exit")),
-        )
     }
 }
