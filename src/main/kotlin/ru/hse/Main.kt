@@ -8,6 +8,7 @@ import ru.hse.command.PwdCommand
 import ru.hse.command.WcCommand
 import ru.hse.environment.EnvironmentImpl
 import ru.hse.executor.ExpressionExecutorImpl
+import ru.hse.factory.CommandFactory
 import ru.hse.factory.CommandFactoryImpl
 import ru.hse.factory.PipeFactoryImpl
 import ru.hse.parser.AssignmentParser
@@ -30,11 +31,7 @@ fun run() {
     val assignmentParser = AssignmentParser(varNameValidator, tokenizer, substitutor)
     val pipeParser = PipeParser(tokenizer, pipeSplitter, substitutor)
     val commandFactory = CommandFactoryImpl(environment)
-    commandFactory.registerCommand("echo") { EchoCommand(it) }
-    commandFactory.registerCommand("wc") { WcCommand(it) }
-    commandFactory.registerCommand("cat") { CatCommand(it) }
-    commandFactory.registerCommand("pwd") { PwdCommand(it) }
-    commandFactory.registerCommand("exit") { ExitCommand() }
+    addHseshCommands(commandFactory)
     val pipeFactory = PipeFactoryImpl()
     val expressionExecutor = ExpressionExecutorImpl(
         assignmentParser,
@@ -46,4 +43,12 @@ fun run() {
     val cli = CLIImpl(System.`in`, System.out, System.err)
     val app = HseshApplication(cli, expressionExecutor)
     app.run()
+}
+
+fun addHseshCommands(commandFactory: CommandFactory) {
+    commandFactory.registerCommand("echo") { EchoCommand(it) }
+    commandFactory.registerCommand("wc") { WcCommand(it) }
+    commandFactory.registerCommand("cat") { CatCommand(it) }
+    commandFactory.registerCommand("pwd") { PwdCommand(it) }
+    commandFactory.registerCommand("exit") { ExitCommand() }
 }
