@@ -6,16 +6,28 @@ We use `Gradle` as build system
 
 For Linux and MacOS:
 ```shell
-./gradlew build # build project
-./gradlew installDist # make executable script
+./gradlew installDist # build and make executable script
 ./build/install/hsesh/bin/hsesh # run our shell
 ```
 
 For Windows:
 ```shell
-.\gradlew.bat build # build project
-.\gradlew.bat installDist # make executable script
+.\gradlew.bat installDist # build and make executable script
 .\build\install\hsesh\bin\hsesh.bat # run our shell
+```
+
+## Run tests
+
+For Linux and MacOS:
+```shell
+./gradlew test
+./gradlew check # also runs additional tools like detekt
+```
+
+For Windows:
+```shell
+.\gradlew.bat test
+.\gradlew.bat check # also runs additional tools like detekt
 ```
 
 ## Features
