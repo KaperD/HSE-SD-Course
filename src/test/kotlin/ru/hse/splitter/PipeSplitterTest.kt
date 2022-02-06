@@ -16,7 +16,7 @@ class PipeSplitterTest {
     @ParameterizedTest
     @MethodSource("correctTokensData")
     fun `test correct tokens split`(tokens: List<String>, expectedLists: List<List<String>>) {
-        val res = splitter.split(tokens)
+        val res = splitter.trySplit(tokens)
         assertTrue(res.isSuccess)
         assertEquals(expectedLists, res.getOrThrow())
     }
@@ -24,7 +24,7 @@ class PipeSplitterTest {
     @ParameterizedTest
     @MethodSource("wrongTokensData")
     fun `test wrong tokens split`(tokens: List<String>) {
-        val res = splitter.split(tokens)
+        val res = splitter.trySplit(tokens)
         assertTrue(res.isFailure)
     }
 

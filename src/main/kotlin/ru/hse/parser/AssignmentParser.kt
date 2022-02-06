@@ -17,7 +17,7 @@ class AssignmentParser(
      * Проверяет, является ли выражение присваиванием
      * Если является, то возвращает готовые к использованию название и значение переменной
      */
-    override fun parse(line: String): Result<Pair<String, String>> {
+    override fun tryParse(line: String): Result<Pair<String, String>> {
         val trimmedLine = line.trim()
 
         val positionOfEqualSign = trimmedLine.indexOf('=')
@@ -42,7 +42,7 @@ class AssignmentParser(
         if (expression.isNotEmpty() && expression.first().isWhitespace()) {
             return false
         }
-        val tokens = tokenizer.tokenize(expression)
+        val tokens = tokenizer.tryTokenize(expression)
         return tokens.isSuccess && tokens.getOrThrow().size <= 1
     }
 }

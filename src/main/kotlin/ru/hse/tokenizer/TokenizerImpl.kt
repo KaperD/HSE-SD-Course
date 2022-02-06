@@ -6,7 +6,7 @@ class TokenizerImpl : Tokenizer {
     private val validToken = "(\\||('[^']*'|\"[^\"]*\"|[^'\"|\\s]+)+)\\s*".toRegex()
     private val failure: Result<List<String>> = failure("Invalid expression for tokenization")
 
-    override fun tokenize(expression: String): Result<List<String>> {
+    override fun tryTokenize(expression: String): Result<List<String>> {
         val trimmedExpression = expression.trim()
 
         var startIndex = 0

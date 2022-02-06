@@ -9,5 +9,5 @@ interface Parser<T> {
      * Преобразовать строку в сущность с типом T
      * Если не получилось, возвращает ошибку
      */
-    fun parse(line: String): Result<T>
+    fun tryParse(line: String): Result<T>
 }

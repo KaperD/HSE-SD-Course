@@ -8,5 +8,5 @@ interface PipeSplitter {
      * Поделить список токенов на команды (команды в виде списка токенов)
      * Если не получилось, возвращает ошибку
      */
-    fun split(tokens: List<String>): Result<List<List<String>>>
+    fun trySplit(tokens: List<String>): Result<List<List<String>>>
 }

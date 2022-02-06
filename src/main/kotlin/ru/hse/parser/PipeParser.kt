@@ -16,19 +16,19 @@ class PipeParser(
      * Проверяет, является ли выражение пайпом
      * Если является, то возвращает список команд (команды в виде списка токенов готовых к использованию)
      */
-    override fun parse(line: String): Result<List<List<String>>> {
+    override fun tryParse(line: String): Result<List<List<String>>> {
         return substitute(split(tokenize(line)))
     }
 
     private fun tokenize(line: String): Result<List<String>> {
-        return tokenizer.tokenize(line)
+        return tokenizer.tryTokenize(line)
     }
 
     private fun split(tokens: Result<List<String>>): Result<List<List<String>>> {
         if (tokens.isFailure) {
             return Result.failure(tokens.exceptionOrNull()!!)
         }
-        return pipeSplitter.split(tokens.getOrThrow())
+        return pipeSplitter.trySplit(tokens.getOrThrow())
     }
 
     private fun substitute(commandsTokens: Result<List<List<String>>>): Result<List<List<String>>> {

@@ -8,5 +8,5 @@ interface Tokenizer {
      * Разбивает выражение на токены
      * Если не получилось, возвращает ошибку
      */
-    fun tokenize(expression: String): Result<List<String>>
+    fun tryTokenize(expression: String): Result<List<String>>
 }

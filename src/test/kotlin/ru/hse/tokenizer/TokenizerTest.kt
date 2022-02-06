@@ -14,7 +14,7 @@ class TokenizerTest {
     @ParameterizedTest
     @MethodSource("correctExpressionsData")
     fun `test parse correct expressions`(expression: String, expectedTokens: List<String>) {
-        val res = tokenizer.tokenize(expression)
+        val res = tokenizer.tryTokenize(expression)
         assertTrue(res.isSuccess)
         assertEquals(expectedTokens, res.getOrThrow())
     }
@@ -22,7 +22,7 @@ class TokenizerTest {
     @ParameterizedTest
     @MethodSource("ignoresSpacesData")
     fun `test parse ignores spaces`(expression: String, expectedTokens: List<String>) {
-        val res = tokenizer.tokenize(expression)
+        val res = tokenizer.tryTokenize(expression)
         assertTrue(res.isSuccess)
         assertEquals(expectedTokens, res.getOrThrow())
     }
@@ -30,7 +30,7 @@ class TokenizerTest {
     @ParameterizedTest
     @MethodSource("wrongQuotationData")
     fun `test parse incorrect expressions wrong quotation`(expression: String) {
-        val res = tokenizer.tokenize(expression)
+        val res = tokenizer.tryTokenize(expression)
         assertTrue(res.isFailure)
         assertTrue(res.toString().contains("Invalid expression for tokenization"))
     }

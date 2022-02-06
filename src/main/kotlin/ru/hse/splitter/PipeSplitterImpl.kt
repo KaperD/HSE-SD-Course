@@ -6,7 +6,7 @@ import ru.hse.utils.failure
  * Делит список токенов по токену |
  */
 class PipeSplitterImpl : PipeSplitter {
-    override fun split(tokens: List<String>): Result<List<List<String>>> {
+    override fun trySplit(tokens: List<String>): Result<List<List<String>>> {
         val splitPipe = mutableListOf<List<String>>()
         var tokenAccumulator: MutableList<String> = mutableListOf()
 

@@ -46,7 +46,7 @@ class PipeParserTest {
         ]
     )
     fun `test invalid pipe missing quotation`(expression: String) {
-        assertTrue(parser.parse(expression).isFailure)
+        assertTrue(parser.tryParse(expression).isFailure)
     }
 
     @ParameterizedTest
@@ -62,13 +62,13 @@ class PipeParserTest {
         ]
     )
     fun `test invalid pipe empty command`(expression: String) {
-        assertTrue(parser.parse(expression).isFailure)
+        assertTrue(parser.tryParse(expression).isFailure)
     }
 
     @ParameterizedTest
     @MethodSource("correctPipeData")
     fun `test correct pipe`(expression: String, expected: List<List<String>>) {
-        val res = parser.parse(expression)
+        val res = parser.tryParse(expression)
         assertTrue(res.isSuccess)
         assertEquals(expected, res.getOrThrow())
     }

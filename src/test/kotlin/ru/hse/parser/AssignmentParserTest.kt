@@ -50,13 +50,13 @@ class AssignmentParserTest {
         ]
     )
     fun `test invalid assignment`(expression: String) {
-        assertTrue(parser.parse(expression).isFailure)
+        assertTrue(parser.tryParse(expression).isFailure)
     }
 
     @ParameterizedTest
     @MethodSource("validAssignmentData")
     fun `test valid assignment`(expression: String, expectedKey: String, expectedValue: String) {
-        val res = parser.parse(expression)
+        val res = parser.tryParse(expression)
         assertTrue(res.isSuccess)
         assertEquals(Pair(expectedKey, expectedValue), res.getOrThrow())
     }

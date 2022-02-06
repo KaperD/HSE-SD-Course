@@ -30,7 +30,7 @@ class ExpressionExecutorImpl(
         output: OutputStream,
         error: OutputStream
     ): ExecutionResult {
-        val resultAssignmentParser = assignmentParser.parse(expression)
+        val resultAssignmentParser = assignmentParser.tryParse(expression)
         if (resultAssignmentParser.isSuccess) {
             val key = resultAssignmentParser.getOrThrow().first
             val value = resultAssignmentParser.getOrThrow().second
@@ -38,7 +38,7 @@ class ExpressionExecutorImpl(
             return success
         }
 
-        val resultPipeParser = pipeParser.parse(expression)
+        val resultPipeParser = pipeParser.tryParse(expression)
 
         return when {
             resultPipeParser.isSuccess -> {
