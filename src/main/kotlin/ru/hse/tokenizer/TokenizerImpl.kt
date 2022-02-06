@@ -3,7 +3,15 @@ package ru.hse.tokenizer
 import ru.hse.utils.failure
 
 class TokenizerImpl : Tokenizer {
-    private val validToken = "(\\||('[^']*'|\"[^\"]*\"|[^'\"|\\s]+)+)\\s*".toRegex()
+    /**
+     * Принимаются 5 видов токенов:
+     * - |
+     * - '[^']*' — например, 'Hello | $World!'
+     * - "[^"]*" — например, "Hello | $World!"
+     * - [^'"|\s]+ — например, Hello$World
+     * - конкатенация последних трех — например, "Hello "$a'World'
+     */
+    private val validToken = """(\||('[^']*'|"[^"]*"|[^'"|\s]+)+)\s*""".toRegex()
     private val failure: Result<List<String>> = failure("Invalid expression for tokenization")
 
     override fun tryTokenize(expression: String): Result<List<String>> {
