@@ -1,5 +1,5 @@
 # hsesh — simple shell
-[![codecov](https://codecov.io/gh/KaperD/HSE-SD-Course/branch/implementation-task/graph/badge.svg?token=XK9YMS2NLZ)](https://codecov.io/gh/KaperD/HSE-SD-Course)
+[![codecov](https://codecov.io/gh/KaperD/HSE-SD-Course/branch/master/graph/badge.svg?token=XK9YMS2NLZ)](https://codecov.io/gh/KaperD/HSE-SD-Course)
 
 ## Build and run
 We use `Gradle` as build system
