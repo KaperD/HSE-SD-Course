@@ -21,10 +21,10 @@ interface IOCommand {
      * Выводит ошибку в error, если она случилась во время чтения
      * @param fileName путь до файла
      * @param error поток для вывода ошибок
-     * @param block действие над открытым для чтения файлом
+     * @param block действие над открытым для чтения файлом, которое возвращает true, если всё прошло без ошибок
      * @return true, если чтение завершилось без ошибок
      */
-    fun readFile(fileName: String, error: OutputStream, block: (InputStream) -> Unit): Boolean {
+    fun readFile(fileName: String, error: OutputStream, block: (InputStream) -> Boolean): Boolean {
         if (!checkFile(fileName, error)) {
             return false
         }
@@ -32,7 +32,6 @@ interface IOCommand {
             File(fileName).inputStream().buffered().use {
                 block(it)
             }
-            true
         } catch (ignored: SecurityException) {
             error.writePermissionDeniedError(fileName)
             false
@@ -49,13 +48,12 @@ interface IOCommand {
      * Безопасно выполнить IO действия
      * Если во время исполнения произошло IOException, ошибка будет выведена в error
      * @param error поток для вывода ошибок
-     * @param block IO действие
+     * @param block IO действие, которое возвращает true, если всё прошло без ошибок
      * @return true, если выполнение завершилось без ошибок
      */
-    fun safeIO(error: OutputStream, block: () -> Unit): Boolean {
+    fun safeIO(error: OutputStream, block: () -> Boolean): Boolean {
         return try {
             block()
-            true
         } catch (e: IOException) {
             error.writeIOError(e.message)
             false
