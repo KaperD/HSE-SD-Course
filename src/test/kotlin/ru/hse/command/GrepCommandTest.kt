@@ -145,6 +145,20 @@ class GrepCommandTest {
         assertTrue(error.toString(charset).contains("Match error: pattern is too complex or line is too big"))
     }
 
+    @Test
+    fun `test grep cyrillic case insensitive`() {
+        val grep = createGrepCommand(listOf("-i", "минимальный"))
+        val inputBytes = "Минимальный синтаксис grep".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
+        assertEquals("Минимальный синтаксис grep${lineSeparator()}", output.toString(charset))
+        assertEquals(0, error.size())
+    }
+
     companion object {
         private val grepResults = mapOf(
             "src/test/resources/grep_short.txt" to mapOf(

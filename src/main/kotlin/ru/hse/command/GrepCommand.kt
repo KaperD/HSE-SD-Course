@@ -48,7 +48,7 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
         val pattern = if (matchFullWord) """\b(?=\w)$patternString\b(?<=\w)""" else patternString
         return try {
             return if (caseInsensitive) {
-                Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)
+                Pattern.compile(pattern, Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE)
             } else {
                 Pattern.compile(pattern)
             }
