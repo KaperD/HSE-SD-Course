@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation("commons-cli:commons-cli:1.5.0")
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
