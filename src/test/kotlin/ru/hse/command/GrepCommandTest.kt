@@ -1,23 +1,14 @@
 package ru.hse.command
 
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
-import org.junit.jupiter.params.provider.ValueSource
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
-import ru.hse.utils.trimMarginCrossPlatform
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.OutputStream
 import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.text.lines
 
 class GrepCommandTest {
     private val charset: Charset = HseshCharsets.default
@@ -65,7 +56,7 @@ class GrepCommandTest {
                     "- What's up with you, hello? You look sad...",
                     "- You sure, heLLO? Maybe you want some cheesecake? I know one place, it's just across this street"
                 ),
-                listOf("Hell", "-A", "2") to listOf(
+                listOf("Hell", "-A", "1") to listOf(
                     "- Hi, Hello!",
                     "- Hello, Hi...",
                     "- What's up with you, hello? You look sad...",
