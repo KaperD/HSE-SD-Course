@@ -9,6 +9,8 @@ import java.lang.System.lineSeparator
 import java.nio.charset.Charset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 class GrepCommandTest {
     private val charset: Charset = HseshCharsets.default
@@ -43,6 +45,90 @@ class GrepCommandTest {
                 testGrepSuccess(allArgs, resultLines)
             }
         }
+    }
+
+    @Test
+    fun `test grep empty input`() {
+        val grep = createGrepCommand(listOf("hello"))
+        val inputBytes = "".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertEquals(0, error.size())
+    }
+
+    @Test
+    fun `test grep missing pattern`() {
+        val grep = createGrepCommand(listOf("-i"))
+        val inputBytes = "".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertTrue(error.toString(charset).contains("pattern is not specified"))
+    }
+
+    @Test
+    fun `test grep wrong pattern`() {
+        val grep = createGrepCommand(listOf("(hello"))
+        val inputBytes = "".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertTrue(error.toString(charset).contains("Pattern syntax error"))
+    }
+
+    @Test
+    fun `test grep missing number of lines`() {
+        val grep = createGrepCommand(listOf("hello", "-A"))
+        val inputBytes = "".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertTrue(error.toString(charset).contains("Parse error: Missing argument for option: A"))
+    }
+
+    @Test
+    fun `test grep wrong string number of lines`() {
+        val grep = createGrepCommand(listOf("hello", "-A", "9j"))
+        val inputBytes = "".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertTrue(error.toString(charset).contains("Argument error: -A argument should be a number, but found 9j"))
+    }
+
+    @Test
+    fun `test grep wrong int number of lines`() {
+        val grep = createGrepCommand(listOf("hello", "-A", "-1"))
+        val inputBytes = "".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertTrue(error.toString(charset).contains("Argument error: -A argument should be non negative, but found -1"))
     }
 
     companion object {
