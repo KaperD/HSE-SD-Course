@@ -13,10 +13,10 @@ import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
 /**
- * grep pattern [file] - Выводит строки из файла в которых встретился pattern.
+ * grep &lt;pattern&gt; &#91;file&#93; - Выводит строки из файла в которых встретился pattern.
  * Если файл не задан, то берет данные из стандартного потока ввода
  *
- * pattern всегда считается регулярным выражением
+ * &lt;pattern&gt; всегда считается регулярным выражением
  *
  * Доступные флаги
  * - -w — поиск только слова целиком

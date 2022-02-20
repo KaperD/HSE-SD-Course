@@ -37,7 +37,7 @@ hsesh provides 5 commands:
 - echo [string ...] — write arguments to the standard output
 - cat [file ...] — concatenate and print files
 - wc [file ...] — word, line, character, and byte count of given files
-- grep [pattern], [file] (-i, -A {n}, -w) - find pattern entries in the file
+- grep \<pattern\> [file] (-i, -A \<n\>, -w) - find pattern entries in the file
 - pwd — write working directory name to the standard output
 - exit — exit hsesh
 
