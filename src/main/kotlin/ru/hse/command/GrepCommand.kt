@@ -53,10 +53,7 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
                 Pattern.compile(pattern)
             }
         } catch (e: PatternSyntaxException) {
-            error.grepError("Pattern syntax error: ${e.message}")
-            null
-        } catch (ignored: StackOverflowError) {
-            error.grepError("Pattern compile error: pattern is too complex to compile")
+            error.grepError("Pattern error: ${e.message}")
             null
         }
     }
@@ -69,7 +66,7 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
         numberOfLinesToPrintAfter: Int
     ): ExecutionResult {
         val success = safeIO(error) {
-            process(input, output, pattern, numberOfLinesToPrintAfter)
+            process(input, output, error, pattern, numberOfLinesToPrintAfter)
         }
         return if (success) ExecutionResult.success else ExecutionResult.fail
     }
@@ -82,7 +79,7 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
         numberOfLinesToPrintAfter: Int
     ): ExecutionResult {
         val success = readFile(fileName, error) { input ->
-            process(input, output, pattern, numberOfLinesToPrintAfter)
+            process(input, output, error, pattern, numberOfLinesToPrintAfter)
         }
         return if (success) ExecutionResult.success else ExecutionResult.fail
     }
@@ -90,20 +87,28 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
     private fun process(
         input: InputStream,
         output: OutputStream,
+        error: OutputStream,
         pattern: Pattern,
         numberOfLinesToPrintAfter: Int
-    ) {
+    ): Boolean {
         val reader = input.bufferedReader(HseshCharsets.default)
         var numberOfLinesToPrint = 0
-        reader.forEachLine {
-            if (pattern.matcher(it).find()) {
+        for (line in reader.lineSequence()) {
+            val wasFound = try {
+                pattern.matcher(line).find()
+            } catch (ignored: StackOverflowError) {
+                error.grepError("Match error: pattern is too complex or line is too big")
+                return false
+            }
+            if (wasFound) {
                 numberOfLinesToPrint = 1 + numberOfLinesToPrintAfter
             }
             if (numberOfLinesToPrint > 0) {
                 numberOfLinesToPrint--
-                output.writeln(it)
+                output.writeln(line)
             }
         }
+        return true
     }
 
     private fun tryParseOptions(error: OutputStream): GrepOptions? {

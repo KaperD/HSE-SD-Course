@@ -41,6 +41,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
             val metric = metricBuilder()
             val result = metric.measure(input)
             output.writeln(result.formatResults(null))
+            true
         }
         return if (success) ExecutionResult.success else ExecutionResult.fail
     }
@@ -58,6 +59,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
                 val inputResults: MetricResults = metric.measure(it)
                 totalResults.joinResults(inputResults)
                 output.writeln(inputResults.formatResults(fileName))
+                true
             }
             if (!success) {
                 allSuccessful = false

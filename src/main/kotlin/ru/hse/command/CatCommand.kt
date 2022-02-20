@@ -23,7 +23,7 @@ class CatCommand(private val arguments: List<String>) : IOCommand, Executable {
         output: OutputStream,
         error: OutputStream
     ): ExecutionResult {
-        return if (safeIO(error) { input.transferTo(output) }) {
+        return if (safeIO(error) { input.transferTo(output); true }) {
             ExecutionResult.success
         } else {
             ExecutionResult.fail
@@ -36,7 +36,7 @@ class CatCommand(private val arguments: List<String>) : IOCommand, Executable {
     ): ExecutionResult {
         var isSuccessful = true
         for (fileName in arguments) {
-            if (!readFile(fileName, error) { it.transferTo(output) }) {
+            if (!readFile(fileName, error) { it.transferTo(output); true }) {
                 isSuccessful = false
             }
         }
