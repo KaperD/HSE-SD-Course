@@ -131,6 +131,20 @@ class GrepCommandTest {
         assertTrue(error.toString(charset).contains("Argument error: -A argument should be non negative, but found -1"))
     }
 
+    @Test
+    fun `test grep complex pattern`() {
+        val grep = createGrepCommand(listOf("""(#(.|\n)*\w{3,})"""))
+        val inputBytes = ("#" + "a".repeat(10000)).toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertNotEquals(0, res.exitCode)
+        assertEquals(0, output.size())
+        assertTrue(error.toString(charset).contains("Match error: pattern is too complex or line is too big"))
+    }
+
     companion object {
         private val grepResults = mapOf(
             "src/test/resources/grep_short.txt" to mapOf(
