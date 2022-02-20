@@ -37,8 +37,8 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
             val matchFullWord = cmdLine.hasOption("w")
             val caseNonSensitive = cmdLine.hasOption("i")
             val numberOfPrintedLines = cmdLine.getOptionValue("A")?.toInt() ?: 1
-            val inputFilename = cmdLine.args.getOrNull(0) ?: throw GrepArgumentException("file is not specified")
-            val patternString = cmdLine.args.getOrNull(1) ?: throw GrepArgumentException("pattern is not specified")
+            val patternString = cmdLine.args.getOrNull(0) ?: throw GrepArgumentException("pattern is not specified")
+            val inputFilename = cmdLine.args.getOrNull(1) ?: throw GrepArgumentException("input file is not specified")
 
             val pattern = buildPattern(patternString, caseNonSensitive)
             readFile(inputFilename, error) { inputStream ->

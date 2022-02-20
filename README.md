@@ -37,6 +37,7 @@ hsesh provides 5 commands:
 - echo [string ...] — write arguments to the standard output
 - cat [file ...] — concatenate and print files
 - wc [file ...] — word, line, character, and byte count of given files
+- grep [pattern], [file] (-i, -A {n}, -w) - find pattern entries in the file
 - pwd — write working directory name to the standard output
 - exit — exit hsesh
 
@@ -117,3 +118,21 @@ pwd: too many arguments
 > echo 123 | pwd | exit
 Bye
 ```
+
+### Dependencies
+
+## Apache common CLI
+
+We use it for the argument parsing in our Command Line Interface.
+
+We had chosen it, because we have some experience in it,
+and it was really easy to integrate with our current architecture.
+
+We had also looked at the [Picocli](https://github.com/remkop/picocli),
+but it is annotations-based and not very flexible.
+
+There are a lot of other libraries [(jopt-simple comparison)](http://jopt-simple.github.io/jopt-simple/),
+but apache common cli worked just fine for us. Its code is
+straightforward, understandable and easy-to-write. Although,
+we haven't actually tried to implement argument parsing with
+any other library.
