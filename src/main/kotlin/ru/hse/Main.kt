@@ -1,11 +1,7 @@
 package ru.hse
 
 import ru.hse.cli.CLIImpl
-import ru.hse.command.CatCommand
-import ru.hse.command.EchoCommand
-import ru.hse.command.ExitCommand
-import ru.hse.command.PwdCommand
-import ru.hse.command.WcCommand
+import ru.hse.command.*
 import ru.hse.environment.EnvironmentImpl
 import ru.hse.executor.ExpressionExecutorImpl
 import ru.hse.factory.CommandFactory
@@ -51,4 +47,5 @@ fun addHseshCommands(commandFactory: CommandFactory) {
     commandFactory.registerCommand("cat") { CatCommand(it) }
     commandFactory.registerCommand("pwd") { PwdCommand(it) }
     commandFactory.registerCommand("exit") { ExitCommand() }
+    commandFactory.registerCommand("grep") { GrepCommand(it) }
 }
