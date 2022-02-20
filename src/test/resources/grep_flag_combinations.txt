@@ -1,0 +1,22 @@
+This string does not contain th* word you are looking for
+the
+tHe
+This string does not contain th* word you are looking for
+they
+ThEy
+This string does not contain th* word you are looking for
+then
+ThEn
+This string does not contain th* word you are looking for
+either
+eItHeR
+This string does not contain th* word you are looking for
+weather
+wEaThEr
+This string does not contain th* word you are looking for
+mother
+MoThEr
+This string does not contain th* word you are looking for
+This string does not contain th* word you are looking for
+This string does not contain th* word you are looking for
+This string does not contain th* word you are looking for
