@@ -2,13 +2,13 @@ package ru.hse.command
 
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
+import org.apache.commons.cli.ParseException
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.utils.writeln
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -115,7 +115,12 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
 
         val cmdLineParser = DefaultParser()
 
-        val cmdLine = cmdLineParser.parse(grepOptions, args.toTypedArray())
+        val cmdLine = try {
+            cmdLineParser.parse(grepOptions, args.toTypedArray())
+        } catch (e: ParseException) {
+            error.grepError("Parse error: ${e.message}")
+            return null
+        }
 
         val numberOfLinesToPrintAfter: String? = cmdLine.getOptionValue("A")
         return if (cmdLine.argList.getOrNull(0) == null) {
