@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 import ru.hse.charset.HseshCharsets
 import ru.hse.executable.Executable
 import ru.hse.utils.trimMarginCrossPlatform
@@ -43,15 +44,39 @@ class GrepCommandTest {
     }
 
     @Test
-    fun `test without flags`() = testGrepSuccess(
-        listOf(fileShort, "hello"),
-        listOf("- What's up with you, hello? You look sad...")
-    )
+    fun `test grep success`() {
+        for ((filename, results) in grepResults) {
+            for ((resultArgs, resultLines) in results) {
+                val allArgs = resultArgs.toMutableList()
+                allArgs.add(filename)
+                testGrepSuccess(allArgs, resultLines)
+            }
+        }
+    }
 
     companion object {
-        private val fileShort = "src/test/resources/grep_short.txt"
-        private val fileCyrillic = "src/test/resources/grep_cyrillic.txt"
-        private val fileAllStar = "src/test/resources/grep_all_star.txt"
-        private val fileWithSpace = "src/test/resources/grep with space.txt"
+        private val grepResults = mapOf(
+            "src/test/resources/grep_short.txt" to mapOf(
+                listOf("hello") to listOf("- What's up with you, hello? You look sad..."),
+                listOf("Hello") to listOf("- Hi, Hello!", "- Hello, Hi..."),
+                listOf("hello", "-i") to listOf(
+                    "- Hi, Hello!",
+                    "- Hello, Hi...",
+                    "- What's up with you, hello? You look sad...",
+                    "- You sure, heLLO? Maybe you want some cheesecake? I know one place, it's just across this street"
+                ),
+                listOf("Hell", "-A", "2") to listOf(
+                    "- Hi, Hello!",
+                    "- Hello, Hi...",
+                    "- What's up with you, hello? You look sad...",
+                ),
+            ),
+
+            "src/test/resources/grep_cyrillic.txt" to emptyMap(),
+
+            "src/test/resources/grep_all_star.txt" to emptyMap(),
+
+            "src/test/resources/grep with space.txt" to emptyMap()
+        )
     }
 }
