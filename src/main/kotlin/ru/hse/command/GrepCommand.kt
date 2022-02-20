@@ -10,6 +10,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
 import java.util.regex.Pattern
+import java.util.regex.PatternSyntaxException
 
 /**
  * grep pattern [file] - Выводит строки из файла в которых встретился pattern.
@@ -51,8 +52,11 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
             } else {
                 Pattern.compile(pattern)
             }
-        } catch (e: Exception) {
-            error.grepError("Pattern error: ${e.message}")
+        } catch (e: PatternSyntaxException) {
+            error.grepError("Pattern syntax error: ${e.message}")
+            null
+        } catch (ignored: StackOverflowError) {
+            error.grepError("Pattern compile error: pattern is too complex to compile")
             null
         }
     }

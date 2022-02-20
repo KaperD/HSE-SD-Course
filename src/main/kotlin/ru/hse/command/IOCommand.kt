@@ -28,16 +28,15 @@ interface IOCommand {
         if (!checkFile(fileName, error)) {
             return false
         }
-        @Suppress("SwallowedException")
         return try {
             File(fileName).inputStream().buffered().use {
                 block(it)
             }
             true
-        } catch (e: SecurityException) {
+        } catch (ignored: SecurityException) {
             error.writePermissionDeniedError(fileName)
             false
-        } catch (e: FileNotFoundException) {
+        } catch (ignored: FileNotFoundException) {
             error.writeIsNotFileError(fileName)
             false
         } catch (e: IOException) {
