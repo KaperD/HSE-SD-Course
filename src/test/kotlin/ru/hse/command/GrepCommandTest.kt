@@ -86,7 +86,7 @@ class GrepCommandTest {
         assertFalse(res.needExit)
         assertNotEquals(0, res.exitCode)
         assertEquals(0, output.size())
-        assertTrue(error.toString(charset).contains("Pattern syntax error"))
+        assertTrue(error.toString(charset).contains("Pattern error"))
     }
 
     @Test
