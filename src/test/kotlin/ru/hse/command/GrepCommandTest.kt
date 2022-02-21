@@ -162,6 +162,20 @@ class GrepCommandTest {
     }
 
     @Test
+    fun `test grep cyrillic -w`() {
+        val grep = createGrepCommand(listOf("-w", "Минимальный"))
+        val inputBytes = "Минимальный синтаксис grep".toByteArray(charset)
+        val input = ByteArrayInputStream(inputBytes)
+        val output = ByteArrayOutputStream()
+        val error = ByteArrayOutputStream()
+        val res = grep.run(input, output, error)
+        assertFalse(res.needExit)
+        assertEquals(0, res.exitCode)
+        assertEquals("Минимальный синтаксис grep${lineSeparator()}", output.toString(charset))
+        assertEquals(0, error.size())
+    }
+
+    @Test
     fun `test unreadable file`() {
         val unreadable = File("src/test/resources/unreadable_for_grep.txt")
         unreadable.createNewFile()
