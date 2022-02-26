@@ -33,7 +33,7 @@ For Windows:
 ## Features
 
 ### Commands
-hsesh provides 5 commands:
+hsesh provides 6 commands:
 - echo [string ...] — write arguments to the standard output
 - cat [file ...] — concatenate and print files
 - wc [file ...] — word, line, character, and byte count of given files
@@ -127,12 +127,19 @@ We use it for the argument parsing in our Command Line Interface.
 
 We had chosen it, because we have some experience in it,
 and it was really easy to integrate with our current architecture.
+There are a lot of other libraries, but apache common cli worked just fine for us.
+Its code is straightforward, understandable and easy-to-write.
+Although, we haven't actually tried to implement argument parsing with
+any other library.
+
+We have found it and other libraries in
+[Maven Repository](https://mvnrepository.com/open-source/command-line-parsers?p=1),
+[Awesome Kotlin List](https://kotlin.link/?q=cli#libraries/frameworks-command_line%20interface) and
+[jopt-simple comparison](http://jopt-simple.github.io/jopt-simple/)
 
 We had also looked at the [Picocli](https://github.com/remkop/picocli),
 but it is annotations-based and not very flexible.
 
-There are a lot of other libraries [(jopt-simple comparison)](http://jopt-simple.github.io/jopt-simple/),
-but apache common cli worked just fine for us. Its code is
-straightforward, understandable and easy-to-write. Although,
-we haven't actually tried to implement argument parsing with
-any other library.
+And had looked at the [Clikt](https://github.com/ajalt/clikt),
+but it is not convenient to use in our case (it is convenient to use it in Main class, but not in commands).
+
