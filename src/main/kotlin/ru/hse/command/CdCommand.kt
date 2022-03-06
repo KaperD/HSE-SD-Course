@@ -29,7 +29,7 @@ class CdCommand(
                     ExecutionResult.success
                 }
                 false -> {
-                    error.writeln("cd: ${args[0]} is not a directory")
+                    error.writeln("cd: no such file or directory: ${args[0]}")
                     ExecutionResult.fail
                 }
             }
