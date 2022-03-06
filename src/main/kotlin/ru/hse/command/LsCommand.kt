@@ -35,7 +35,13 @@ class LsCommand(
             val (glob, runPath) = if (argPath.isDirectory()) {
                 "*" to argPath
             } else {
-                args[0] to Path(".")
+                args[0] to environment.workDirectory
+            }
+            if (argPath.isRegularFile()) {
+                output.writeln(argPath.name)
+            } else if (runPath.listDirectoryEntries(glob).isEmpty()) {
+                error.writeln("ls: ${argPath.name}: No such file or directory")
+                ExecutionResult.fail
             }
             runPath.listDirectoryEntries(glob).forEach {
                 if (it.name[0] != '.') {
