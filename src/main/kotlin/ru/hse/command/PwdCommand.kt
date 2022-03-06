@@ -1,22 +1,25 @@
 package ru.hse.command
 
+import ru.hse.environment.Environment
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.utils.writeln
 import java.io.InputStream
 import java.io.OutputStream
-import java.nio.file.Paths
 
 /**
  * pwd — выводит текущую директорию в поток вывода
  */
-class PwdCommand(private val args: List<String>) : Executable {
+class PwdCommand(
+    private val environment: Environment,
+    private val args: List<String>
+) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
         if (args.isNotEmpty()) {
             error.writeln("pwd: too many arguments")
             return ExecutionResult.fail
         }
-        output.writeln(Paths.get("").toAbsolutePath().toString())
+        output.writeln(environment.workDirectory.toRealPath().toString())
         return ExecutionResult.success
     }
 }

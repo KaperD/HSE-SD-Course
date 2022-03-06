@@ -9,7 +9,7 @@ import kotlin.io.path.*
 class EnvironmentImpl(
     private val parentEnv: Environment?,
     startVariables: Map<String, String> = emptyMap(),
-    override var workDirectory: Path = Path("")
+    override var workDirectory: Path = Path("").absolute()
 ) : Environment {
     private val localVariables = HashMap<String, String>(startVariables)
 

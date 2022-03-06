@@ -23,9 +23,9 @@ class CdCommand(
             environment.workDirectory = Path(System.getProperty("user.home"))
             ExecutionResult.success
         }
-        1 -> when (Path(args[0]).isDirectory()) {
+        1 -> when (environment.workDirectory.resolve(args[0]).isDirectory()) {
                 true -> {
-                    environment.workDirectory = Path(args[0])
+                    environment.workDirectory = environment.workDirectory.resolve(args[0])
                     ExecutionResult.success
                 }
                 false -> {

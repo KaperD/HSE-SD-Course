@@ -44,7 +44,7 @@ class DefaultCommand(private var command: List<String>, private val environment:
     }
 
     private fun startProcess(source: Redirect, error: OutputStream): Process? {
-        val processBuilder = ProcessBuilder(command)
+        val processBuilder = ProcessBuilder(command).directory(environment.workDirectory.toFile())
         processBuilder.redirectInput(source)
         processBuilder.environment().putAll(environment.getAll())
         return try {

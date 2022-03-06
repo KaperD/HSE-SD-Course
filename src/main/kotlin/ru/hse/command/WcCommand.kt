@@ -1,6 +1,7 @@
 package ru.hse.command
 
 import ru.hse.charset.HseshCharsets
+import ru.hse.environment.Environment
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.utils.writeln
@@ -15,7 +16,11 @@ const val DEFAULT_PADDING = 7
  * wc [file ...] — считает число переводов строки, слов и байт в файлах и выводит это в поток вывода
  * Если список файлов пуст, то считает эти же метрики в потоке ввода
  */
-class WcCommand(private val args: List<String>, private val padding: Int = DEFAULT_PADDING) : IOCommand, Executable {
+class WcCommand(
+    private val environment: Environment,
+    private val args: List<String>,
+    private val padding: Int = DEFAULT_PADDING
+) : IOCommand, Executable {
     override val commandName: String = "wc"
 
     override fun run(input: InputStream, output: OutputStream, error: OutputStream): ExecutionResult {
@@ -54,7 +59,7 @@ class WcCommand(private val args: List<String>, private val padding: Int = DEFAU
         var allSuccessful = true
         val totalResults: MetricResults = TreeMap()
         for (fileName in args) {
-            val success = readFile(fileName, error) {
+            val success = readFile(environment, fileName, error) {
                 val metric = metricBuilder()
                 val inputResults: MetricResults = metric.measure(it)
                 totalResults.joinResults(inputResults)

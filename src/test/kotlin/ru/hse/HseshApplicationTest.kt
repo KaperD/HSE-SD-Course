@@ -38,8 +38,8 @@ class HseshApplicationTest {
         val commandFactory = CommandFactoryImpl(environment)
         commandFactory.registerCommand("exit") { ExitCommand() }
         commandFactory.registerCommand("echo") { EchoCommand(it) }
-        commandFactory.registerCommand("cat") { CatCommand(it) }
-        commandFactory.registerCommand("pwd") { PwdCommand(it) }
+        commandFactory.registerCommand("cat") { CatCommand(environment, it) }
+        commandFactory.registerCommand("pwd") { PwdCommand(environment, it) }
         val pipeFactory = PipeFactoryImpl()
         val expressionExecutor = ExpressionExecutorImpl(
             assignmentParser,

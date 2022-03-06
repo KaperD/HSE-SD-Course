@@ -1,5 +1,6 @@
 package ru.hse.command
 
+import ru.hse.environment.Environment
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.utils.writeln
@@ -15,24 +16,31 @@ import kotlin.io.path.*
  * Иначе считает, что в качестве аргумента дано регулярное выражение и
  *  выводит все файлы под него подходящие
  */
-class LsCommand(private val args: List<String>) : Executable {
+class LsCommand(
+    private val environment: Environment,
+    private val args: List<String>
+) : Executable {
     override fun run(input: InputStream, output: OutputStream, error: OutputStream
     ): ExecutionResult = when (args.size) {
         0 -> {
-            Path(".").listDirectoryEntries().forEach {
-                output.writeln(it.toAbsolutePath().toString())
+            environment.workDirectory.listDirectoryEntries().forEach {
+                if (it.name[0] != '.') {
+                    output.writeln(it.name)
+                }
             }
             ExecutionResult.success
         }
         1 -> {
-            val argPath = Path(".").resolve(args[0])
+            val argPath = environment.workDirectory.resolve(args[0])
             val (glob, runPath) = if (argPath.isDirectory()) {
                 "*" to argPath
             } else {
                 args[0] to Path(".")
             }
             runPath.listDirectoryEntries(glob).forEach {
-                output.writeln(it.toAbsolutePath().toString())
+                if (it.name[0] != '.') {
+                    output.writeln(it.name)
+                }
             }
             ExecutionResult.success
         }

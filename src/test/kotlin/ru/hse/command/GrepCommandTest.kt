@@ -2,6 +2,7 @@ package ru.hse.command
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
+import ru.hse.environment.EnvironmentImpl
 import ru.hse.executable.Executable
 import ru.hse.utils.trimIndentCrossPlatform
 import java.io.ByteArrayInputStream
@@ -17,7 +18,10 @@ import kotlin.test.assertTrue
 class GrepCommandTest {
     private val charset: Charset = HseshCharsets.default
 
-    private fun createGrepCommand(args: List<String>): Executable = GrepCommand(args)
+    private fun createGrepCommand(args: List<String>): Executable {
+        val environment = EnvironmentImpl(EnvironmentImpl(null, System.getenv()))
+        return GrepCommand(environment, args)
+    }
 
     private fun testGrepSuccess(
         args: List<String>,
