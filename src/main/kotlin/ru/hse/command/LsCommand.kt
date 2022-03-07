@@ -20,7 +20,10 @@ class LsCommand(
     private val environment: Environment,
     private val args: List<String>
 ) : Executable {
-    override fun run(input: InputStream, output: OutputStream, error: OutputStream
+    override fun run(
+        input: InputStream,
+        output: OutputStream,
+        error: OutputStream
     ): ExecutionResult = when (args.size) {
         0 -> {
             environment.workDirectory.listDirectoryEntries().forEach {
@@ -41,7 +44,7 @@ class LsCommand(
         output: OutputStream,
         error: OutputStream,
         arg: String
-    ) : ExecutionResult {
+    ): ExecutionResult {
         val argPath = environment.workDirectory.resolve(arg)
         val (glob, runPath) = if (argPath.isDirectory()) {
             "*" to argPath

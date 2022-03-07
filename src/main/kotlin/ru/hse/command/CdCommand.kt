@@ -17,8 +17,11 @@ class CdCommand(
     private val environment: Environment,
     private val args: List<String>
 ) : Executable {
-    override fun run(input: InputStream, output: OutputStream, error: OutputStream
-    ): ExecutionResult = when(args.size) {
+    override fun run(
+        input: InputStream,
+        output: OutputStream,
+        error: OutputStream
+    ): ExecutionResult = when (args.size) {
         0 -> {
             environment.workDirectory = Path(System.getProperty("user.home"))
             ExecutionResult.success
