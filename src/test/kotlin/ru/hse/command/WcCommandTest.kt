@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import ru.hse.charset.HseshCharsets
+import ru.hse.environment.EnvironmentImpl
 import ru.hse.executable.Executable
 import ru.hse.utils.trimMarginCrossPlatform
 import java.io.ByteArrayInputStream
@@ -20,7 +21,10 @@ import kotlin.test.assertNotEquals
 class WcCommandTest {
     private val charset: Charset = HseshCharsets.default
 
-    private fun createWcCommand(args: List<String>) = WcCommand(args, 7)
+    private fun createWcCommand(args: List<String>): WcCommand {
+        val environment = EnvironmentImpl(EnvironmentImpl(null, System.getenv()))
+        return WcCommand(environment, args, 7)
+    }
 
     @Test
     fun `test empty args`() {

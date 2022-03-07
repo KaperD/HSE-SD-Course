@@ -2,6 +2,7 @@ package ru.hse
 
 import ru.hse.cli.CLIImpl
 import ru.hse.command.*
+import ru.hse.environment.Environment
 import ru.hse.environment.EnvironmentImpl
 import ru.hse.executor.ExpressionExecutorImpl
 import ru.hse.factory.CommandFactory
@@ -27,7 +28,7 @@ fun run() {
     val assignmentParser = AssignmentParser(varNameValidator, tokenizer, substitutor)
     val pipeParser = PipeParser(tokenizer, pipeSplitter, substitutor)
     val commandFactory = CommandFactoryImpl(environment)
-    addHseshCommands(commandFactory)
+    addHseshCommands(environment, commandFactory)
     val pipeFactory = PipeFactoryImpl()
     val expressionExecutor = ExpressionExecutorImpl(
         assignmentParser,
@@ -41,11 +42,13 @@ fun run() {
     app.run()
 }
 
-fun addHseshCommands(commandFactory: CommandFactory) {
+fun addHseshCommands(environment: Environment, commandFactory: CommandFactory) {
     commandFactory.registerCommand("echo") { EchoCommand(it) }
-    commandFactory.registerCommand("wc") { WcCommand(it) }
-    commandFactory.registerCommand("cat") { CatCommand(it) }
-    commandFactory.registerCommand("pwd") { PwdCommand(it) }
+    commandFactory.registerCommand("wc") { WcCommand(environment, it) }
+    commandFactory.registerCommand("cat") { CatCommand(environment, it) }
+    commandFactory.registerCommand("pwd") { PwdCommand(environment, it) }
     commandFactory.registerCommand("exit") { ExitCommand() }
-    commandFactory.registerCommand("grep") { GrepCommand(it) }
+    commandFactory.registerCommand("grep") { GrepCommand(environment, it) }
+    commandFactory.registerCommand("ls") { LsCommand(environment, it) }
+    commandFactory.registerCommand("cd") { CdCommand(environment, it) }
 }

@@ -18,12 +18,13 @@ class PipeFactoryTest {
     private fun createPipeFactory(): PipeFactory = PipeFactoryImpl()
 
     private fun createCommandFactory(): CommandFactory {
-        val factory = CommandFactoryImpl(EnvironmentImpl(null))
+        val environment = EnvironmentImpl(EnvironmentImpl(null, System.getenv()))
+        val factory = CommandFactoryImpl(environment)
         factory.registerCommand("echo") { EchoCommand(it) }
-        factory.registerCommand("cat") { CatCommand(it) }
+        factory.registerCommand("cat") { CatCommand(environment, it) }
         factory.registerCommand("exit") { ExitCommand() }
-        factory.registerCommand("pwd") { PwdCommand(it) }
-        factory.registerCommand("wc") { WcCommand(it) }
+        factory.registerCommand("pwd") { PwdCommand(environment, it) }
+        factory.registerCommand("wc") { WcCommand(environment, it) }
         return factory
     }
 

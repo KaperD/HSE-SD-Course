@@ -1,11 +1,9 @@
 package ru.hse.command
 
+import ru.hse.environment.Environment
 import ru.hse.utils.writeln
 import java.io.*
-import kotlin.io.path.Path
-import kotlin.io.path.isReadable
-import kotlin.io.path.isRegularFile
-import kotlin.io.path.notExists
+import kotlin.io.path.*
 
 /**
  * Команда, которая будет работать с вводом/выводом
@@ -24,12 +22,17 @@ interface IOCommand {
      * @param block действие над открытым для чтения файлом, которое возвращает true, если всё прошло без ошибок
      * @return true, если чтение завершилось без ошибок
      */
-    fun readFile(fileName: String, error: OutputStream, block: (InputStream) -> Boolean): Boolean {
-        if (!checkFile(fileName, error)) {
+    fun readFile(
+        environment: Environment,
+        fileName: String,
+        error: OutputStream,
+        block: (InputStream) -> Boolean
+    ): Boolean {
+        if (!checkFile(environment, fileName, error)) {
             return false
         }
         return try {
-            File(fileName).inputStream().buffered().use {
+            environment.workDirectory.resolve(fileName).inputStream().buffered().use {
                 block(it)
             }
         } catch (ignored: SecurityException) {
@@ -60,8 +63,8 @@ interface IOCommand {
         }
     }
 
-    private fun checkFile(fileName: String, error: OutputStream): Boolean {
-        val pathToFile = Path(fileName)
+    private fun checkFile(environment: Environment, fileName: String, error: OutputStream): Boolean {
+        val pathToFile = environment.workDirectory.resolve(fileName)
         return when {
             pathToFile.notExists() -> {
                 error.writeNotExistsError(fileName)

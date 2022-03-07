@@ -2,6 +2,7 @@ package ru.hse.command
 
 import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
+import ru.hse.environment.EnvironmentImpl
 import ru.hse.executable.Executable
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -14,7 +15,10 @@ import kotlin.test.assertNotEquals
 class PwdCommandTest {
     private val charset: Charset = HseshCharsets.default
 
-    private fun createPwdCommand(args: List<String>): Executable = PwdCommand(args)
+    private fun createPwdCommand(args: List<String>): Executable {
+        val environment = EnvironmentImpl(EnvironmentImpl(null, System.getenv()))
+        return PwdCommand(environment, args)
+    }
 
     @Test
     fun `test correct pwd call`() {

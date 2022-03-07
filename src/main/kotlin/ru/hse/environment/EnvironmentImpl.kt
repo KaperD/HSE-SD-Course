@@ -1,11 +1,15 @@
 package ru.hse.environment
 
+import java.nio.file.Path
+import kotlin.io.path.*
+
 /**
  * Если переменная не нашлась, то перенаправляет запрос к родителю (если он есть)
  */
 class EnvironmentImpl(
     private val parentEnv: Environment?,
-    startVariables: Map<String, String> = emptyMap()
+    startVariables: Map<String, String> = emptyMap(),
+    override var workDirectory: Path = Path("").absolute()
 ) : Environment {
     private val localVariables = HashMap<String, String>(startVariables)
 

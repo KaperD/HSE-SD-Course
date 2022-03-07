@@ -4,6 +4,7 @@ import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
 import ru.hse.charset.HseshCharsets
+import ru.hse.environment.Environment
 import ru.hse.executable.Executable
 import ru.hse.executable.ExecutionResult
 import ru.hse.utils.writeln
@@ -23,7 +24,10 @@ import java.util.regex.PatternSyntaxException
  * - -i — регистронезависимый (case-insensitive) поиск
  * - -A — следующее за -A число говорит, сколько строк после совпадения надо распечатать
  */
-class GrepCommand(private val args: List<String>) : IOCommand, Executable {
+class GrepCommand(
+    private val environment: Environment,
+    private val args: List<String>
+) : IOCommand, Executable {
     override val commandName: String
         get() = "grep"
 
@@ -78,7 +82,7 @@ class GrepCommand(private val args: List<String>) : IOCommand, Executable {
         pattern: Pattern,
         numberOfLinesToPrintAfter: Int
     ): ExecutionResult {
-        val success = readFile(fileName, error) { input ->
+        val success = readFile(environment, fileName, error) { input ->
             process(input, output, error, pattern, numberOfLinesToPrintAfter)
         }
         return if (success) ExecutionResult.success else ExecutionResult.fail

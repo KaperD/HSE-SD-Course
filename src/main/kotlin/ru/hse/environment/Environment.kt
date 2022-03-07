@@ -1,9 +1,16 @@
 package ru.hse.environment
 
+import java.nio.file.Path
+
 /**
- * Отвечает за переменные окружения
+ * Отвечает за переменные окружения и текущую рабочую директорию
  */
 interface Environment {
+    /**
+     * Текущая рабочая директория
+     */
+    var workDirectory: Path
+
     /**
      * Установить значение для переменной
      * @param key имя переменной

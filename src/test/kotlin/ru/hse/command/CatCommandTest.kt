@@ -5,17 +5,13 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import ru.hse.charset.HseshCharsets
+import ru.hse.environment.EnvironmentImpl
 import ru.hse.executable.Executable
 import ru.hse.utils.trimIndentCrossPlatform
 import ru.hse.utils.trimMarginCrossPlatform
 import java.io.*
 import java.lang.System.lineSeparator
 import java.nio.charset.Charset
-import java.nio.file.Path
-import java.nio.file.attribute.PosixFilePermissions
-import kotlin.io.path.createFile
-import kotlin.io.path.deleteExisting
-import kotlin.io.path.pathString
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
@@ -24,7 +20,8 @@ class CatCommandTest {
     private val charset: Charset = HseshCharsets.default
 
     private fun createCatCommand(args: List<String>): Executable {
-        return CatCommand(args)
+        val environment = EnvironmentImpl(EnvironmentImpl(null, System.getenv()))
+        return CatCommand(environment, args)
     }
 
     @Test
