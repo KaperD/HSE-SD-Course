@@ -5,6 +5,7 @@ import ru.hse.charset.HseshCharsets
 import ru.hse.environment.Environment
 import ru.hse.environment.EnvironmentImpl
 import ru.hse.executable.Executable
+import ru.hse.utils.writeln
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
@@ -76,7 +77,9 @@ class CdCommandTest {
         assertFalse(res.needExit)
         assertEquals(env.workDirectory.toRealPath(), Path("").toRealPath())
         assertNotEquals(0, res.exitCode)
-        assertEquals("cd: too many arguments\n", error.toString(charset))
+        val expected = ByteArrayOutputStream()
+        expected.writeln("cd: too many arguments")
+        assertEquals(expected.toString(charset), error.toString(charset))
     }
 
     @Test
@@ -89,6 +92,8 @@ class CdCommandTest {
         assertFalse(res.needExit)
         assertEquals(env.workDirectory.toRealPath(), Path("").toRealPath())
         assertNotEquals(0, res.exitCode)
-        assertEquals("cd: no such directory: МируМир/\n", error.toString(charset))
+        val expected = ByteArrayOutputStream()
+        expected.writeln("cd: no such directory: МируМир/")
+        assertEquals(expected.toString(charset), error.toString(charset))
     }
 }

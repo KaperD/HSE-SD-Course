@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import ru.hse.charset.HseshCharsets
 import ru.hse.environment.EnvironmentImpl
 import ru.hse.executable.Executable
+import ru.hse.utils.writeln
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
@@ -61,10 +62,11 @@ class LsCommandTest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val res = ls.run(input, output, error)
-        val expected = "LsCommand.kt\n"
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(expected, output.toString(charset))
+        val expected = ByteArrayOutputStream()
+        expected.writeln("LsCommand.kt")
+        assertEquals(expected.toString(charset), output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -75,10 +77,11 @@ class LsCommandTest {
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
         val res = ls.run(input, output, error)
-        val expected = "gradlew.bat\n"
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
-        assertEquals(expected, output.toString(charset))
+        val expected = ByteArrayOutputStream()
+        expected.writeln("gradlew.bat")
+        assertEquals(expected.toString(charset), output.toString(charset))
         assertEquals(0, error.size())
     }
 
@@ -91,7 +94,9 @@ class LsCommandTest {
         val res = ls.run(input, output, error)
         assertFalse(res.needExit)
         assertEquals(1, res.exitCode)
-        assertEquals("ls: too many arguments\n", error.toString(charset))
+        val expected = ByteArrayOutputStream()
+        expected.writeln("ls: too many arguments")
+        assertEquals(expected.toString(charset), error.toString(charset))
     }
 
     @Test
@@ -102,6 +107,8 @@ class LsCommandTest {
         val error = ByteArrayOutputStream()
         val res = ls.run(input, output, error)
         assertFalse(res.needExit)
-        assertEquals("ls: Миру-Мир.txt: No such file or directory\n", error.toString(charset))
+        val expected = ByteArrayOutputStream()
+        expected.writeln("ls: Миру-Мир.txt: No such file or directory")
+        assertEquals(expected.toString(charset), error.toString(charset))
     }
 }
