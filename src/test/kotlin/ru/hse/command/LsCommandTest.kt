@@ -31,7 +31,7 @@ class LsCommandTest {
         val res = ls.run(input, output, error)
         val expected = Path("").listDirectoryEntries()
             .filter {it.name[0] != '.'}
-            .joinToString(separator = "\n", postfix = "\n")
+            .joinToString(separator = System.lineSeparator(), postfix = System.lineSeparator())
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
         assertEquals(expected, output.toString(charset))
@@ -48,7 +48,7 @@ class LsCommandTest {
         val expected = Path("src/main/kotlin/ru/hse/").listDirectoryEntries()
             .map {it.name}
             .filter {it[0] != '.'}
-            .joinToString(separator = "\n", postfix = "\n")
+            .joinToString(separator = System.lineSeparator(), postfix = System.lineSeparator())
         assertFalse(res.needExit)
         assertEquals(0, res.exitCode)
         assertEquals(expected, output.toString(charset))
