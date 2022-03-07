@@ -33,11 +33,24 @@ class LsCommand(
             }
             ExecutionResult.success
         }
-        1 -> lsWithArgument(output, error, args[0])
+        1 -> when (args[0].contains('*')) {
+            true -> lsWithWildCard(output, args[0])
+            false -> lsWithArgument(output, error, args[0])
+        }
         else -> {
             error.writeln("ls: too many arguments")
             ExecutionResult.fail
         }
+    }
+
+    private fun lsWithWildCard(
+        output: OutputStream,
+        arg: String
+    ): ExecutionResult {
+        environment.workDirectory.listDirectoryEntries(arg)
+            .filter { it.name[0] != '.' }
+            .forEach { output.writeln(it.name) }
+        return ExecutionResult.success
     }
 
     private fun lsWithArgument(
@@ -57,11 +70,9 @@ class LsCommand(
             error.writeln("ls: ${argPath.name}: No such file or directory")
             return ExecutionResult.fail
         }
-        runPath.listDirectoryEntries(glob).forEach {
-            if (it.name[0] != '.') {
-                output.writeln(it.name)
-            }
-        }
+        runPath.listDirectoryEntries(glob)
+            .filter { it.name[0] != '.' }
+            .forEach { output.writeln(it.name) }
         return ExecutionResult.success
     }
 }
