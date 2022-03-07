@@ -89,6 +89,6 @@ class CdCommandTest {
         assertFalse(res.needExit)
         assertEquals(env.workDirectory.toRealPath(), Path("").toRealPath())
         assertNotEquals(0, res.exitCode)
-        assertEquals("cd: no such file or directory: МируМир/\n", error.toString(charset))
+        assertEquals("cd: no such directory: МируМир/\n", error.toString(charset))
     }
 }

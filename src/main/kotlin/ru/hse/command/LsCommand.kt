@@ -30,29 +30,35 @@ class LsCommand(
             }
             ExecutionResult.success
         }
-        1 -> {
-            val argPath = environment.workDirectory.resolve(args[0])
-            val (glob, runPath) = if (argPath.isDirectory()) {
-                "*" to argPath
-            } else {
-                args[0] to environment.workDirectory
-            }
-            if (argPath.isRegularFile()) {
-                output.writeln(argPath.name)
-            } else if (runPath.listDirectoryEntries(glob).isEmpty()) {
-                error.writeln("ls: ${argPath.name}: No such file or directory")
-                ExecutionResult.fail
-            }
-            runPath.listDirectoryEntries(glob).forEach {
-                if (it.name[0] != '.') {
-                    output.writeln(it.name)
-                }
-            }
-            ExecutionResult.success
-        }
+        1 -> lsWithArgument(output, error, args[0])
         else -> {
             error.writeln("ls: too many arguments")
             ExecutionResult.fail
         }
+    }
+
+    private fun lsWithArgument(
+        output: OutputStream,
+        error: OutputStream,
+        arg: String
+    ) : ExecutionResult {
+        val argPath = environment.workDirectory.resolve(arg)
+        val (glob, runPath) = if (argPath.isDirectory()) {
+            "*" to argPath
+        } else {
+            arg to environment.workDirectory
+        }
+        if (argPath.isRegularFile()) {
+            output.writeln(argPath.name)
+        } else if (runPath.listDirectoryEntries(glob).isEmpty()) {
+            error.writeln("ls: ${argPath.name}: No such file or directory")
+            return ExecutionResult.fail
+        }
+        runPath.listDirectoryEntries(glob).forEach {
+            if (it.name[0] != '.') {
+                output.writeln(it.name)
+            }
+        }
+        return ExecutionResult.success
     }
 }

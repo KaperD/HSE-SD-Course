@@ -102,7 +102,6 @@ class LsCommandTest {
         val error = ByteArrayOutputStream()
         val res = ls.run(input, output, error)
         assertFalse(res.needExit)
-        assertEquals(0, res.exitCode)
         assertEquals("ls: Миру-Мир.txt: No such file or directory\n", error.toString(charset))
     }
 }
